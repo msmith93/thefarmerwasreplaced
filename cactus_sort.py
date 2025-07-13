@@ -48,7 +48,9 @@ def sort_row():
 
 
 clear()
-grow_cactus_row()
-move_drone_to_x_pos(0)
-sort_row()
 
+for y in range(cols):
+	grow_cactus_row()
+	move_drone_to_x_pos(0)
+	sort_row()
+	move(North)

@@ -3,8 +3,10 @@ mode_iters_count = 0
 mode_iters_target = 20
 
 MIN_HAY = 30000
-MIN_CARROT = 20000
-MIN_PUMPKIN = 40000
+MIN_CARROT = 5000
+MIN_PUMPKIN = 100000
+
+pumpkin_first_run = True
 
 def is_on_corner():
 	x = get_pos_x()
@@ -63,8 +65,10 @@ def run_carrot_or_grass(plant_type):
 		move(East)
 	
 def run_pumpkin():
+	global pumpkin_first_run
 	world_size = get_world_size()
 	empty_cell = False
+	first_pass = True
 	
 	for x in range(world_size):
 		for y in range(world_size):
@@ -75,13 +79,23 @@ def run_pumpkin():
 				empty_cell = True
 				harvest()
 				plant_and_use_water(Entities.Pumpkin)
+				if not pumpkin_first_run:
+					use_item(Items.Fertilizer)
+					while not get_entity_type():
+						plant_and_use_water(Entities.Pumpkin)
+						use_item(Items.Fertilizer)
+						
 				
 			move(North)
 		move(East)
 	
-	if not empty_cell:
+	if not pumpkin_first_run:
 		if can_harvest():
 			harvest()
+			pumpkin_first_run = True
+	else:
+		pumpkin_first_run = False
+
 			
 
 def run_mode(mode):

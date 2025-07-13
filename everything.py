@@ -3,8 +3,9 @@ mode_iters_count = 0
 mode_iters_target = 20
 
 MIN_HAY = 30000
-MIN_CARROT = 5000
+MIN_CARROT = 10000
 MIN_PUMPKIN = 100000
+MIN_CACTI = 20000
 
 pumpkin_first_run = True
 
@@ -29,7 +30,9 @@ def get_mode():
 		return Entities.Carrot
 	if num_items(Items.Pumpkin) < MIN_PUMPKIN:
 		return Entities.Pumpkin
-	return Entities.Cactus
+	if num_items(Items.Cactus) < MIN_CACTI:
+		return Entities.Cactus
+	return Entities.Dinosaur
 	
 def prepare_ground(plant_type):
 	ground_type = get_ground_type()
@@ -96,20 +99,145 @@ def run_pumpkin():
 	else:
 		pumpkin_first_run = False
 
+def plant_cacti():
+	clear()
+	world_size = get_world_size()
+	for i in range(world_size):
+		for j in range(world_size):
+			till()
+			plant(Entities.Cactus)
+			move(East)
+		move(North)
+
+def move_to_x_pos(x_target):
+	x_curr = get_pos_x()
+	moves_needed = x_target - x_curr
+	if moves_needed > 0:
+		dir = East
+	else:
+		dir = West
+	for i in range(abs(moves_needed)):
+		if not move(dir):
+			hat_flip()
+
+def move_to_y_pos(y_target):
+	y_curr = get_pos_y()
+	moves_needed = y_target - y_curr
+	if moves_needed > 0:
+		dir = North
+	else:
+		dir = South
+	for i in range(abs(moves_needed)):
+		if not move(dir):
+			hat_flip()
+
+def go_to_origin():
+	move_to_x_pos(0)
+	move_to_y_pos(0)
+
+def sort_row():
+	world_size = get_world_size()
+	# Assume drone is at the first column
+	for i in range(world_size):
+		swapped = False
+		for j in range(0, world_size - i - 1):
+			move_to_x_pos(j)
+			if measure() > measure(East):
+				swap(East)
+				swapped = True
+		if not swapped:
+			break
+
+def sort_all_rows():
+	world_size = get_world_size()
+	move_to_x_pos(0)
+	for i in range(world_size):
+		move_to_y_pos(i)
+		sort_row()
+		
+def sort_col():
+	world_size = get_world_size()
+	# Assume drone is at the first row
+	for i in range(world_size):
+		swapped = False
+		for j in range(0, world_size - i - 1):
+			move_to_y_pos(j)
+			if measure() > measure(North):
+				swap(North)
+				swapped = True
+		if not swapped:
+			break
 			
+def sort_all_cols():
+	world_size = get_world_size()
+	move_to_y_pos(0)
+	for i in range(world_size):
+		move_to_x_pos(i)
+		sort_col()
+		
+def sort_cacti():
+	sort_all_rows()
+	sort_all_cols()
+
+def run_cactus():
+	plant_cacti()
+	go_to_origin()
+	sort_cacti()
+	harvest()
+
+def hat_flip():
+	change_hat(Hats.Straw_Hat)
+	change_hat(Hats.Dinosaur_Hat)
+
+def run_dino():
+	next_x, next_y = measure()
+	
+	move_to_x_pos(next_x)
+	move_to_y_pos(next_y)
+	
+	if get_entity_type() != Entities.Apple:
+		hat_flip()
+
+def prep_dino():
+	clear()
+	change_hat(Hats.Straw_Hat)
+	for x in range(get_world_size()):
+		for y in range(get_world_size()):
+			harvest()
+			move(North)
+		move(East)
+	
+	hat_flip()
+	
+def prep_mode(mode):
+	if mode in [Entities.Grass, Entities.Carrot]:
+		pass
+	elif mode == Entities.Cactus:
+		pass
+	elif mode == Entities.Pumpkin:
+		pass
+	elif mode == Entities.Dinosaur:
+		prep_dino()
 
 def run_mode(mode):
-	if mode in [Entities.Grass, Entities.Carrot, Entities.Cactus]:
+	if mode in [Entities.Grass, Entities.Carrot]:
 		run_carrot_or_grass(mode)
+	elif mode == Entities.Cactus:
+		run_cactus()
 	elif mode == Entities.Pumpkin:
 		run_pumpkin()
+	elif mode == Entities.Dinosaur:
+		run_dino()
 
 while True:
+	prev_mode = mode
 	if mode_iters_count >= mode_iters_target or not mode:
 		mode_iters_count = 0
 		mode = get_mode()
 	else:
 		mode_iters_count += 1
-		
+	
+	if prev_mode != mode:
+		prep_mode(mode)
 	run_mode(mode)
-
+	

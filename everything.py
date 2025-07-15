@@ -209,7 +209,7 @@ def run_sunflower():
 	
 	min_pedals = 7
 	max_pedals = 15
-	for j in range(0, max_pedals - min_pedals):
+	for j in range(0, max_pedals - min_pedals + 1):
 		i = max_pedals - j
 		targets_list = sf_size_tracker[i]
 		

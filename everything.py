@@ -2,9 +2,10 @@ mode = None
 mode_iters_count = 0
 mode_iters_target = 20
 
+MIN_POWER = 500
 MIN_HAY = 30000
-MIN_CARROT = 10000
-MIN_PUMPKIN = 100000
+MIN_CARROT = 20000
+MIN_PUMPKIN = 20000
 MIN_CACTI = 20000
 
 pumpkin_first_run = True
@@ -24,6 +25,8 @@ def is_on_corner():
 	return False
 
 def get_mode():
+	if num_items(Items.Power) < MIN_POWER:
+		return Entities.Sunflower
 	if num_items(Items.Hay) < MIN_HAY:
 		return Entities.Grass
 	if num_items(Items.Carrot) < MIN_CARROT:
@@ -185,6 +188,36 @@ def run_cactus():
 	sort_cacti()
 	harvest()
 
+def run_sunflower():
+	clear()
+	change_hat(Hats.Straw_Hat)
+	go_to_origin()
+	sf_size_tracker = {}
+	world_size = get_world_size()
+	for x in range(world_size):
+		for y in range(world_size):
+			plant_and_use_water(Entities.Sunflower)
+			pedal_count = measure()
+			if pedal_count:
+				if pedal_count not in sf_size_tracker:
+					sf_size_tracker[pedal_count] = []
+				else:
+					pass
+				sf_size_tracker[pedal_count].append((x, y))
+			move(North)
+		move(East)
+	
+	min_pedals = 7
+	max_pedals = 15
+	for j in range(0, max_pedals - min_pedals):
+		i = max_pedals - j
+		targets_list = sf_size_tracker[i]
+		
+		for target in targets_list:
+			move_to_x_pos(target[0])
+			move_to_y_pos(target[1])
+			harvest()
+
 def hat_flip():
 	change_hat(Hats.Straw_Hat)
 	change_hat(Hats.Dinosaur_Hat)
@@ -222,6 +255,8 @@ def prep_mode(mode):
 def run_mode(mode):
 	if mode in [Entities.Grass, Entities.Carrot]:
 		run_carrot_or_grass(mode)
+	elif mode == Entities.Sunflower:
+		run_sunflower()
 	elif mode == Entities.Cactus:
 		run_cactus()
 	elif mode == Entities.Pumpkin:

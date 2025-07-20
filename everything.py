@@ -2,11 +2,14 @@ mode = None
 mode_iters_count = 0
 mode_iters_target = 20
 
-MIN_POWER = 500
-MIN_HAY = 30000
-MIN_CARROT = 20000
-MIN_PUMPKIN = 20000
-MIN_CACTI = 20000
+MIN_POWER = 1000
+MIN_HAY = 100000
+MIN_WOOD = 1000000
+MIN_CARROT = 40000
+MIN_PUMPKIN = 200000
+MIN_CACTI = 600000
+
+world_size = get_world_size()
 
 pumpkin_first_run = True
 
@@ -15,7 +18,7 @@ def is_on_corner():
 	y = get_pos_y()
 	world_size = get_world_size()
 	
-	if x == get_world_size() - 1:
+	if x == world_size - 1:
 		if y == world_size - 1 or y == 0:
 			return True
 	elif x == 0:
@@ -29,6 +32,8 @@ def get_mode():
 		return Entities.Sunflower
 	if num_items(Items.Hay) < MIN_HAY:
 		return Entities.Grass
+	if num_items(Items.Wood) < MIN_WOOD:
+		return Entities.Tree
 	if num_items(Items.Carrot) < MIN_CARROT:
 		return Entities.Carrot
 	if num_items(Items.Pumpkin) < MIN_PUMPKIN:
@@ -50,22 +55,29 @@ def plant_and_use_water(plant_type):
 		use_item(Items.Water)
 	if Entities.Grass != plant_type:
 		plant(plant_type)
-	
-def plant_and_use_water_with_trees(plant_type):
-	if is_on_corner():
-		plant_type = Entities.Tree
-	plant_and_use_water(plant_type)
 
 def harvest_and_plant(plant_type):
 	if can_harvest():
 		harvest()
 	if not get_entity_type() or get_entity_type() == Entities.Grass:
-		plant_and_use_water_with_trees(plant_type)
+		plant_and_use_water(plant_type)
 
 def run_carrot_or_grass(plant_type):
 	world_size = get_world_size()
 	for x in range(world_size):
 		for y in range(world_size):
+			harvest_and_plant(plant_type)
+			move(North)
+		move(East)
+		
+def run_tree():
+	global world_size
+	for x in range(world_size):
+		for y in range(world_size):
+			if x % 2 == y % 2:
+				plant_type = Entities.Tree
+			else:
+				plant_type = Entities.Bush
 			harvest_and_plant(plant_type)
 			move(North)
 		move(East)
@@ -233,28 +245,35 @@ def run_dino():
 
 def prep_dino():
 	clear()
-	change_hat(Hats.Straw_Hat)
-	for x in range(get_world_size()):
-		for y in range(get_world_size()):
-			harvest()
-			move(North)
-		move(East)
-	
 	hat_flip()
 	
+def prep_ground(ground_type):
+	clear()
+	for i in range(world_size):
+		for j in range(world_size):
+			if get_ground_type() != ground_type:
+				till()
+			move(East)
+		move(North)
+
 def prep_mode(mode):
-	if mode in [Entities.Grass, Entities.Carrot]:
+	if mode == Entities.Grass:
+		prep_ground(Grounds.Grassland)
+	elif mode in {Entities.Carrot, Entities.Pumpkin}:
+		prep_ground(Grounds.Soil)
+	elif mode == Entities.Tree:
 		pass
 	elif mode == Entities.Cactus:
-		pass
-	elif mode == Entities.Pumpkin:
 		pass
 	elif mode == Entities.Dinosaur:
 		prep_dino()
 
 def run_mode(mode):
+
 	if mode in [Entities.Grass, Entities.Carrot]:
 		run_carrot_or_grass(mode)
+	elif mode == Entities.Tree:
+		run_tree()
 	elif mode == Entities.Sunflower:
 		run_sunflower()
 	elif mode == Entities.Cactus:
@@ -263,6 +282,8 @@ def run_mode(mode):
 		run_pumpkin()
 	elif mode == Entities.Dinosaur:
 		run_dino()
+
+change_hat(Hats.Straw_Hat)
 
 while True:
 	prev_mode = mode

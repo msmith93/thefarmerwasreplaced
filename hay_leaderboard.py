@@ -32,27 +32,27 @@ def resolveConflict(x_curr, y_curr, target_x, target_y, target_entity):
 	if (target_x, target_y) in hay_mapping:
 		companion_pos = hay_mapping[(target_x, target_y)]
 		if companion_pos not in companion_mapping:
-			move_to_x_pos(target_x)
-			move_to_y_pos(target_y)
-		else:
-			if (companion_pos[0], companion_pos[1]) in companion_mapping:
-				resolveConflict(target_x, target_y, companion_pos[0], companion_pos[1], companion_mapping[companion_pos])
-			
 			# Plant the companion at the target position and immediately return
 			move_to_x_pos(companion_pos[0])
 			move_to_y_pos(companion_pos[1])
 			plant(companion_mapping[companion_pos])
-			move_to_x_pos(target_x)
-			move_to_y_pos(target_y)
+
+		else:
+			resolveConflict(target_x, target_y, companion_pos[0], companion_pos[1], companion_mapping[companion_pos])
 		
+		move_to_x_pos(target_x)
+		move_to_y_pos(target_y)
 		harvest()
 		hay_mapping.pop((target_x, target_y))
-		track_companion(x_curr, y_curr)
+		plant(target_entity)
 
+		# Need to do this before leaving
 		move_to_x_pos(x_curr)
 		move_to_y_pos(y_curr)
 
-	else:
+	
+	
+
 
 
 def track_companion(x_curr, y_curr):

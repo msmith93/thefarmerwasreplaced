@@ -25,19 +25,60 @@ def go_to_origin():
 companion_mapping = {}
 hay_mapping = {}
 
-def track_companion():
+def resolveConflict(x_curr, y_curr, target_x, target_y, target_entity):
+	global companion_mapping
+	global hay_mapping
+
+	if (target_x, target_y) in hay_mapping:
+		companion_pos = hay_mapping[(target_x, target_y)]
+		if companion_pos not in companion_mapping:
+			move_to_x_pos(target_x)
+			move_to_y_pos(target_y)
+		else:
+			if (companion_pos[0], companion_pos[1]) in companion_mapping:
+				resolveConflict(target_x, target_y, companion_pos[0], companion_pos[1], companion_mapping[companion_pos])
+			
+			# Plant the companion at the target position and immediately return
+			move_to_x_pos(companion_pos[0])
+			move_to_y_pos(companion_pos[1])
+			plant(companion_mapping[companion_pos])
+			move_to_x_pos(target_x)
+			move_to_y_pos(target_y)
+		
+		harvest()
+		hay_mapping.pop((target_x, target_y))
+		track_companion(x_curr, y_curr)
+
+		move_to_x_pos(x_curr)
+		move_to_y_pos(y_curr)
+
+	else:
+
+
+def track_companion(x_curr, y_curr):
 	global companion_mapping
 	global hay_mapping
 	
 	target_entity, (target_x, target_y) = get_companion()
-	if (target_x, target_y) not in companion_mapping:
-		companion_mapping[(target_x, target_y)] = target_entity
-		hay_mapping[(x_curr, y_curr)] = (target_x, target_y)	
+
+	if target_entity == Entities.Carrot and num_items(Items.Wood) < 1:
+		return
+
+	if (target_x, target_y) in companion_mapping:
+		resolveConflict(x_curr, y_curr, target_x, target_y, target_entity)	
+	
+	companion_mapping[(target_x, target_y)] = target_entity
+	hay_mapping[(x_curr, y_curr)] = (target_x, target_y)
+
+# Wait for initial grass to grow
+while not can_harvest():
+	pass
 
 while True:
 	if num_items(Items.Hay) >= 100000:
 		break
 	
+	# TODO: Don't run this every loop. Track x and y separately
 	x_curr = get_pos_x()
 	y_curr = get_pos_y()
 	

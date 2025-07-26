@@ -18,10 +18,6 @@ def move_to_y_pos(y_target):
 	for i in range(abs(moves_needed)):
 		move(dir)
 
-def go_to_origin():
-	move_to_x_pos(0)
-	move_to_y_pos(0)
-
 companion_mapping = {}
 hay_mapping = {}
 
@@ -30,6 +26,11 @@ def track_companion():
 	global hay_mapping
 	
 	target_entity, (target_x, target_y) = get_companion()
+
+	while target_entity == Entities.Carrot and num_items(Items.Wood) < 1:
+		harvest()
+		target_entity, (target_x, target_y) = get_companion()
+
 	if (target_x, target_y) not in companion_mapping:
 		companion_mapping[(target_x, target_y)] = target_entity
 		hay_mapping[(x_curr, y_curr)] = (target_x, target_y)	
@@ -42,7 +43,8 @@ while True:
 	y_curr = get_pos_y()
 	
 	if get_entity_type() == Entities.Grass:
-		harvest()
+		if can_harvest():
+			harvest()
 		if (x_curr, y_curr) in hay_mapping: # Had a companion that was already planted
 			companion_pos = hay_mapping[(x_curr, y_curr)]
 			hay_mapping.pop((x_curr, y_curr))

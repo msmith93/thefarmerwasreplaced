@@ -102,5 +102,6 @@ while True:
 		next_mode = get_mode()
 		if next_mode != curr_mode:
 			prep_mode(next_mode)
+		curr_mode = next_mode
 	run_mode(next_mode)
 	mode_cnt += 1

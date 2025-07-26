@@ -66,6 +66,9 @@ def resolveConflict(x_curr, y_curr, target_x, target_y):
 		if conflicting_companion not in [Entities.Bush, Entities.Tree]:
 			till()
 
+	# Can't plant if a non hay is there
+	if get_entity_type() != Entities.Grass:
+		harvest()
 	plant(conflicting_companion)
 	hay_pos = companion_to_hay_mapping[(target_x, target_y)]
 	
@@ -148,4 +151,5 @@ while True:
 	if y_curr == get_world_size() - 1:
 		move(East)
 	move(North)
+	
 	

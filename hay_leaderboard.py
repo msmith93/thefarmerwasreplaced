@@ -22,36 +22,58 @@ def go_to_origin():
 	move_to_x_pos(0)
 	move_to_y_pos(0)
 
+
+# {
+# 	(companion_pos_x, companion_pos_y): compantion_entity_type
+# }
 companion_mapping = {}
+
+# {
+# 	(hay_pos_x, hay_pos_y): (companion_pos_x, companion_pos_y)
+# }
 hay_mapping = {}
 
-def resolveConflict(x_curr, y_curr, target_x, target_y, target_entity):
+# Resolve a conflict when we are trying to track a companion entity but that
+# position is already filled in the companion mapping
+def resolveConflict(x_curr, y_curr, target_x, target_y):
 	global companion_mapping
 	global hay_mapping
 
+	# If there is hay that is already being tracked (maybe it already has a companion)
 	if (target_x, target_y) in hay_mapping:
 		companion_pos = hay_mapping[(target_x, target_y)]
+		# If the companion is not in the companion mapping, that means the companion has
+		# already been planted. We can harvest this hay
 		if companion_pos not in companion_mapping:
-			# Plant the companion at the target position and immediately return
-			move_to_x_pos(companion_pos[0])
-			move_to_y_pos(companion_pos[1])
-			plant(companion_mapping[companion_pos])
-
+			move_to_x_pos(target_x)
+			move_to_y_pos(target_y)
+			harvest()
 		else:
-			resolveConflict(target_x, target_y, companion_pos[0], companion_pos[1], companion_mapping[companion_pos])
-		
-		move_to_x_pos(target_x)
-		move_to_y_pos(target_y)
-		harvest()
-		hay_mapping.pop((target_x, target_y))
-		plant(target_entity)
+			resolveConflict(target_x, target_y, companion_pos[0], companion_pos[1])
 
-		# Need to do this before leaving
-		move_to_x_pos(x_curr)
-		move_to_y_pos(y_curr)
+	# Plant the conflicting companion, move to its parent hay, harvest that, and 
+	# now the position is free to be added to the companion mapping
+	conflicting_companion = companion_mapping[(target_x, target_y)]
+	move_to_x_pos(target_x)
+	move_to_y_pos(target_y)
 
+	plant(conflicting_companion)
+	hay_pos = None
+	for k in hay_mapping:
+		if hay_mapping[k] == (target_x, target_y):
+			hay_pos = k
 	
+	move_to_x_pos(hay_pos[0])
+	move_to_y_pos(hay_pos[1])
+	harvest()
+
+	hay_mapping.pop(hay_pos)
+	companion_mapping.pop((target_x, target_y))
 	
+	# Return to original position
+	move_to_x_pos(x_curr)
+	move_to_y_pos(y_curr)
+
 
 
 
@@ -61,18 +83,15 @@ def track_companion(x_curr, y_curr):
 	
 	target_entity, (target_x, target_y) = get_companion()
 
-	if target_entity == Entities.Carrot and num_items(Items.Wood) < 1:
-		return
+	while target_entity == Entities.Carrot and num_items(Items.Wood) < 1:
+		harvest()
+		target_entity, (target_x, target_y) = get_companion()
 
 	if (target_x, target_y) in companion_mapping:
-		resolveConflict(x_curr, y_curr, target_x, target_y, target_entity)	
+		resolveConflict(x_curr, y_curr, target_x, target_y)	
 	
 	companion_mapping[(target_x, target_y)] = target_entity
 	hay_mapping[(x_curr, y_curr)] = (target_x, target_y)
-
-# Wait for initial grass to grow
-while not can_harvest():
-	pass
 
 while True:
 	if num_items(Items.Hay) >= 100000:
@@ -83,7 +102,9 @@ while True:
 	y_curr = get_pos_y()
 	
 	if get_entity_type() == Entities.Grass:
-		harvest()
+		if can_harvest():
+			harvest()
+
 		if (x_curr, y_curr) in hay_mapping: # Had a companion that was already planted
 			companion_pos = hay_mapping[(x_curr, y_curr)]
 			hay_mapping.pop((x_curr, y_curr))
@@ -95,7 +116,7 @@ while True:
 				till()
 			plant(target_entity)
 		else: # Only when current position is growing grass
-			track_companion() 
+			track_companion(x_curr, y_curr) 
 		
 	else: # Entity is not grass AKA it is / was a companion
 		if (x_curr, y_curr) not in companion_mapping: # Companion has served its purpose
@@ -105,7 +126,7 @@ while True:
 			else:
 				harvest()
 		
-			track_companion()
+			track_companion(x_curr, y_curr)
 
 
 	if y_curr == get_world_size() - 1:

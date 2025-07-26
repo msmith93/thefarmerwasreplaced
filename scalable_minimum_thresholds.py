@@ -1,3 +1,4 @@
+# Assumes the world size is event. If world size is odd, current algorithm for run_bone will fail.
 world_size = get_world_size()
 
 min_num_items = 10000
@@ -179,6 +180,76 @@ def run_cactus():
 	plant_all(Entities.Cactus)
 	sort_cacti()
 	harvest()
+	
+def hat_flip():
+	change_hat(Hats.Straw_Hat)
+	change_hat(Hats.Dinosaur_Hat)
+
+def prep_bone():
+	clear()
+	hat_flip()
+	
+def run_bone():
+	global world_size
+	
+	while True:
+		for i in range(world_size / 2):
+			move_to_y_pos(world_size - 1)
+			if not move(East):
+				hat_flip()
+				break
+			move_to_y_pos(1)
+			if i != world_size / 2 - 1:
+				if not move(East):
+					hat_flip()
+					break
+	
+		move_to_y_pos(0)
+		move_to_x_pos(0)
+		
+ALL_DIRECTIONS = [North, South, East, West]
+
+def opposite_direction(direction):
+	if direction == North:
+		return South
+	elif direction == East:
+		return West
+	elif direction == South:
+		return North
+	elif direction == West:
+		return East
+
+def explore_option(direction):
+	if not move(direction):
+		return False
+	
+	if get_entity_type() == Entities.Treasure:
+		harvest()
+		return True
+	
+	for explore_direction in ALL_DIRECTIONS:
+		if opposite_direction(explore_direction) != direction:
+			if explore_option(explore_direction):
+				return True
+	
+	move(opposite_direction(direction))
+
+
+def prep_gold():
+	pass
+	
+def run_gold():
+	while True:
+		clear()
+		change_hat(Hats.Straw_Hat)
+		plant(Entities.Bush)
+		n_substance = get_world_size() * num_unlocked(Unlocks.Mazes)
+		use_item(Items.Weird_Substance, n_substance)
+	
+	
+		for direction in ALL_DIRECTIONS:
+			if explore_option(direction):
+				return
 
 def get_mode():
 	global min_num_items
@@ -193,6 +264,10 @@ def get_mode():
 		return Items.Pumpkin
 	elif num_items(Items.Cactus) < min_num_items:
 		return Items.Cactus
+	elif num_items(Items.Bone) < min_num_items:
+		return Items.Bone
+	elif num_items(Items.Gold) < min_num_items:
+		return Items.Gold
 	else:
 		min_num_items *= 2
 		return get_mode()
@@ -208,6 +283,10 @@ def prep_mode(mode):
 		prep_pumpkin()
 	elif mode == Items.Cactus:
 		prep_cactus()
+	elif mode == Items.Bone:
+		prep_bone()
+	elif mode == Items.Gold:
+		prep_gold()
 
 def run_mode(mode):
 	if mode == Items.Hay:
@@ -220,6 +299,10 @@ def run_mode(mode):
 		run_pumpkin()
 	elif mode == Items.Cactus:
 		run_cactus()
+	elif mode == Items.Bone:
+		run_bone()
+	elif mode == Items.Gold:
+		run_gold()
 	
 mode_cnt = 0
 curr_mode = None

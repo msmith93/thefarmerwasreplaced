@@ -1,23 +1,3 @@
-def move_to_x_pos(x_target):
-	x_curr = get_pos_x()
-	moves_needed = x_target - x_curr
-	if moves_needed > 0:
-		dir = East
-	else:
-		dir = West
-	for i in range(abs(moves_needed)):
-		move(dir)
-
-def move_to_y_pos(y_target):
-	y_curr = get_pos_y()
-	moves_needed = y_target - y_curr
-	if moves_needed > 0:
-		dir = North
-	else:
-		dir = South
-	for i in range(abs(moves_needed)):
-		move(dir)
-
 companion_mapping = {}
 hay_mapping = {}
 

@@ -1,21 +1,39 @@
 def move_to_x_pos(x_target):
+	global world_size
+	
 	x_curr = get_pos_x()
 	moves_needed = x_target - x_curr
-	if moves_needed > 0:
-		dir = East
+	if x_target > x_curr:
+		east_moves = x_target - x_curr
 	else:
+		east_moves = x_target + (world_size - x_curr)
+	west_moves = world_size - east_moves
+	
+	if east_moves > west_moves:
 		dir = West
-	for i in range(abs(moves_needed)):
+	else:
+		dir = East
+
+	for i in range(min(east_moves, west_moves)):
 		move(dir)
 
 def move_to_y_pos(y_target):
+	global world_size
+	
 	y_curr = get_pos_y()
 	moves_needed = y_target - y_curr
-	if moves_needed > 0:
-		dir = North
+	if y_target > y_curr:
+		north_moves = y_target - y_curr
 	else:
+		north_moves = y_target + (world_size - y_curr)
+	south_moves = world_size - north_moves
+	
+	if north_moves > south_moves:
 		dir = South
-	for i in range(abs(moves_needed)):
+	else:
+		dir = North
+
+	for i in range(min(north_moves, south_moves)):
 		move(dir)
 
 def go_to_origin():

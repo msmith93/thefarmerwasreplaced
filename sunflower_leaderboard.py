@@ -9,7 +9,7 @@ count = 0
 petal_min = 12
 water_threshold = 0.535
 
-def plant_and_use_water():
+def invoke_plant():
 	global first_pass
 	
 	if first_pass:
@@ -21,7 +21,6 @@ def move_to_x_pos(x_target):
 	global world_size
 	
 	x_curr = get_pos_x()
-	moves_needed = x_target - x_curr
 	if x_target > x_curr:
 		east_moves = x_target - x_curr
 	else:
@@ -41,7 +40,6 @@ def move_to_y_pos(y_target):
 	global world_size
 	
 	y_curr = get_pos_y()
-	moves_needed = y_target - y_curr
 	if y_target > y_curr:
 		north_moves = y_target - y_curr
 	else:
@@ -79,19 +77,20 @@ def get_distance(x_curr, y_curr, x_target, y_target):
 	
 	return y_moves + x_moves
 
-def check_sunflower_ready(curr_ticks, sunflower_ticks, sunflower_water, distance_away, fertilizer_count):
-	ticks_elapsed_since_planted = curr_ticks - sunflower_ticks
-	# Takes less than 70k ticks for sunflower to grow. Water at level 1 increases growth by 5x
-	SUNFLOWER_GROWTH_TIME = 70000.0
+def check_sunflower_ready(curr_time, sunflower_plant_time, sunflower_water, distance_away, fertilizer_count):
+	time_elapsed_since_planted = curr_time - sunflower_plant_time
+	# Takes less than 8.3 seconds for sunflower to grow. Water at level 1 increases growth by 5x
+	SUNFLOWER_GROWTH_TIME = 7.5
 	sunflower_time_to_grow = SUNFLOWER_GROWTH_TIME
 	if sunflower_water != 0:
 		sunflower_time_to_grow = SUNFLOWER_GROWTH_TIME / (5 * sunflower_water)
-		
-	# Fertilizer reduces growth time by 25k ticks (need to test this in a simulation)
-	sunflower_time_to_grow_with_fert = sunflower_time_to_grow - 25000 * fertilizer_count
 
-	ready_without_fertilizer =  ticks_elapsed_since_planted + 100 * distance_away > sunflower_time_to_grow
-	ready_with_fertilizer = ticks_elapsed_since_planted + 100 * distance_away > sunflower_time_to_grow_with_fert
+	# Fertilizer reduces growth time by 2 seconds (need to test this in a simulation)
+	sunflower_time_to_grow_with_fert = sunflower_time_to_grow - 2 * fertilizer_count
+
+	TIME_TO_MOVE_ONE_STEP = 0.12
+	ready_without_fertilizer =  time_elapsed_since_planted + TIME_TO_MOVE_ONE_STEP * distance_away > sunflower_time_to_grow
+	ready_with_fertilizer = time_elapsed_since_planted + TIME_TO_MOVE_ONE_STEP * distance_away > sunflower_time_to_grow_with_fert
 
 	return ready_without_fertilizer, ready_with_fertilizer
 
@@ -101,18 +100,17 @@ def get_closest_sunflower(x_curr, y_curr, sunflowers):
 	min_coordinate = (-1, -1)
 	backup_coordinate = (-1, -1)
 
-	# Each fertilizer removes about 25k ticks from grown
 	fertilizer_count = num_items(Items.Fertilizer)
 
 	for sunflower_pos in sunflowers:
-		sunflower_ticks = sunflowers[sunflower_pos]["ticks"]
+		sunflower_plant_time = sunflowers[sunflower_pos]["time"]
 		sunflower_water = sunflowers[sunflower_pos]["water"]
 		distance = get_distance(x_curr, y_curr, sunflower_pos[0], sunflower_pos[1])
 
-		curr_ticks = get_tick_count()
+		curr_time = get_time()
 		
 		if distance < min_distance:
-			sunflower_ready, sunflower_ready_with_fertilizer = check_sunflower_ready(curr_ticks, sunflower_ticks, sunflower_water, distance, fertilizer_count)
+			sunflower_ready, sunflower_ready_with_fertilizer = check_sunflower_ready(curr_time, sunflower_plant_time, sunflower_water, distance, fertilizer_count)
 			if not (sunflower_ready or sunflower_ready_with_fertilizer):
 				# If we don't have a min yet, set a backup if we never get a min_coordinate
 				if min_coordinate == (-1, -1):
@@ -140,7 +138,7 @@ def run_sunflower():
 	for x in range(world_size):
 		for y in range(world_size):
 			if get_entity_type() != Entities.Sunflower:
-				plant_and_use_water()
+				invoke_plant()
 			pedal_count = measure()
 			
 			if pedal_count > petal_min:
@@ -151,10 +149,10 @@ def run_sunflower():
 				if pedal_count not in sf_size_tracker:
 					sf_size_tracker[pedal_count] = {}
 
-				curr_ticks = get_tick_count()
+				curr_time = get_time()
 				curr_water = get_water()
 				sf_size_tracker[pedal_count][(x, y)] = {
-					"ticks": curr_ticks,
+					"time": curr_time,
 					"water": curr_water
 				}
 			move(North)

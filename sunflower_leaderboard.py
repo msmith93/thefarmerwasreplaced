@@ -60,6 +60,20 @@ def go_to_origin():
 	move_to_x_pos(0)
 	move_to_y_pos(0)
 
+def check_sunflower_ready(curr_time, sunflower_plant_time, sunflower_water, fertilizer_count):
+	time_elapsed_since_planted = curr_time - sunflower_plant_time
+	# Takes less than 8.3 seconds for sunflower to grow. Water at level 1 increases growth by 5x
+	# Growth speed increases linearly with water
+	sunflower_time_to_grow = -4 * 8.3 / 5 * sunflower_water + 8.3
+
+	# Fertilizer reduces growth time by 2 seconds (need to test this in a simulation)
+	sunflower_time_to_grow_with_fert = sunflower_time_to_grow - 2 * fertilizer_count
+
+	ready_without_fertilizer =  time_elapsed_since_planted > sunflower_time_to_grow
+	ready_with_fertilizer = time_elapsed_since_planted > sunflower_time_to_grow_with_fert
+
+	return ready_without_fertilizer, ready_with_fertilizer
+
 def run_sunflower():
 	global count 
 	global petal_min
@@ -79,9 +93,14 @@ def run_sunflower():
 			
 			if pedal_count:
 				if pedal_count not in sf_size_tracker:
-					sf_size_tracker[pedal_count] = []
+					sf_size_tracker[pedal_count] = {}
 
-				sf_size_tracker[pedal_count].append((x, y))
+				curr_time = get_time()
+				curr_water = get_water()
+				sf_size_tracker[pedal_count][(x, y)] = {
+					"time": curr_time,
+					"water": curr_water
+				}
 			move(North)
 		move(East)
 	
@@ -92,19 +111,30 @@ def run_sunflower():
 		i = max_pedals - j
 		if i not in sf_size_tracker:
 			continue
-		targets_list = sf_size_tracker[i]
+		sunflowers = sf_size_tracker[i]
 		
-		for target in targets_list:
+		curr_time = get_time()
+	
+		for sunflower_pos in sunflowers:
+			fertilizer_count = num_items(Items.Fertilizer)
+
 			# We no longer get the power boost when less than 10 sunflowers remain
 			if harvest_counter < 10:
 				return False
 			
-			move_to_x_pos(target[0])
-			move_to_y_pos(target[1])
-			while not can_harvest() and num_items(Items.Fertilizer) > 1:
-				use_item(Items.Fertilizer)
-			if not can_harvest():
-				count += 1
+			sunflower_plant_time = sunflowers[sunflower_pos]["time"]
+			sunflower_water = sunflowers[sunflower_pos]["water"]
+			
+			sunflower_ready, sunflower_ready_with_fertilizer = check_sunflower_ready(curr_time, sunflower_plant_time, sunflower_water, fertilizer_count)
+			
+			move_to_x_pos(sunflower_pos[0])
+			move_to_y_pos(sunflower_pos[1])
+
+			if sunflower_ready_with_fertilizer and not sunflower_ready:
+				while not can_harvest() and num_items(Items.Fertilizer) > 1:
+					use_item(Items.Fertilizer)
+			
+			
 			harvest() # sometimes we harvest a sunflower that is not yet fully grown. TODO track these cases?
 			harvest_counter -= 1
 			if num_items(Items.Power) >= 100000:
@@ -118,3 +148,7 @@ first_pass = False
 		
 while not run_sunflower():
 	pass
+
+water = num_items(Items.Water)
+quick_print(count)
+quick_print(water)

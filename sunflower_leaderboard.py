@@ -81,12 +81,13 @@ def get_distance(x_curr, y_curr, x_target, y_target):
 
 def check_sunflower_ready(curr_ticks, sunflower_ticks, sunflower_water, distance_away, fertilizer_count):
 	ticks_elapsed_since_planted = curr_ticks - sunflower_ticks
-	# Takes around 140k ticks for sunflower to grow. Water at level 1 increases growth by 5x
-	SUNFLOWER_GROWTH_TIME = 100000.0
+	# Takes less than 70k ticks for sunflower to grow. Water at level 1 increases growth by 5x
+	SUNFLOWER_GROWTH_TIME = 70000.0
 	sunflower_time_to_grow = SUNFLOWER_GROWTH_TIME
 	if sunflower_water != 0:
 		sunflower_time_to_grow = SUNFLOWER_GROWTH_TIME / (5 * sunflower_water)
-	# Fertilizer reduces growth time by 25k ticks
+		
+	# Fertilizer reduces growth time by 25k ticks (need to test this in a simulation)
 	sunflower_time_to_grow_with_fert = sunflower_time_to_grow - 25000 * fertilizer_count
 
 	ready_without_fertilizer =  ticks_elapsed_since_planted + 100 * distance_away > sunflower_time_to_grow
@@ -104,7 +105,6 @@ def get_closest_sunflower(x_curr, y_curr, sunflowers):
 	fertilizer_count = num_items(Items.Fertilizer)
 
 	for sunflower_pos in sunflowers:
-		fertilizer_required = False
 		sunflower_ticks = sunflowers[sunflower_pos]["ticks"]
 		sunflower_water = sunflowers[sunflower_pos]["water"]
 		distance = get_distance(x_curr, y_curr, sunflower_pos[0], sunflower_pos[1])

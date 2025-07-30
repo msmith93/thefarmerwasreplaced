@@ -16,10 +16,25 @@ def track_companion():
 	if not tree_tile(target_x, target_y) and (target_x, target_y) not in companion_mapping:
 		companion_mapping[(target_x, target_y)] = target_entity
 		tree_mapping[(curr_x, curr_y)] = (target_x, target_y)
-		# TODO only water the plant if we are planting a tree that will have a companion return True
+		return True
+	return False
 
 def tree_tile(curr_x, curr_y):
 	return curr_x % 2 == curr_y % 2
+	
+def plant_initial():
+	for i in range(world_size):
+		for j in range(world_size):
+			if can_harvest():
+				harvest()
+			if tree_tile(i, j):
+				plant(Entities.Tree)
+			else:
+				plant(Entities.Bush)
+			move(North)
+		move(East)
+			
+plant_initial()
 
 while True:
 	if tree_tile(curr_x, curr_y):
@@ -33,8 +48,7 @@ while True:
 			tree_mapping.pop((curr_x, curr_y))
 			companion_mapping.pop(companion_pos)
 				
-		track_companion()
-		if get_water() < 0.13:
+		if track_companion() and get_water() < 0.13:
 			use_item(Items.Water)
 	elif (curr_x, curr_y) in companion_mapping:
 		target_entity = companion_mapping[(curr_x, curr_y)]

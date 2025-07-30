@@ -21,20 +21,6 @@ def track_companion():
 
 def tree_tile(curr_x, curr_y):
 	return curr_x % 2 == curr_y % 2
-	
-def plant_initial():
-	for i in range(world_size):
-		for j in range(world_size):
-			if can_harvest():
-				harvest()
-			if tree_tile(i, j):
-				plant(Entities.Tree)
-			else:
-				plant(Entities.Bush)
-			move(North)
-		move(East)
-			
-plant_initial()
 
 while True:
 	if tree_tile(curr_x, curr_y):

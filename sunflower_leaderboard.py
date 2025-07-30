@@ -8,6 +8,7 @@ count = 0
 # Comment these out for simulation runs
 petal_min = 12
 water_threshold = 0.535
+initial_wait = 3
 
 def plant_and_use_water():
 	global first_pass
@@ -21,7 +22,6 @@ def move_to_x_pos(x_target):
 	global world_size
 	
 	x_curr = get_pos_x()
-	moves_needed = x_target - x_curr
 	if x_target > x_curr:
 		east_moves = x_target - x_curr
 	else:
@@ -41,7 +41,6 @@ def move_to_y_pos(y_target):
 	global world_size
 	
 	y_curr = get_pos_y()
-	moves_needed = y_target - y_curr
 	if y_target > y_curr:
 		north_moves = y_target - y_curr
 	else:
@@ -64,9 +63,11 @@ def run_sunflower():
 	global count 
 	global petal_min
 	global water_threshold
+	global initial_wait
 	go_to_origin()
 	sf_size_tracker = {}
 	world_size = get_world_size()
+	before_time = get_time()
 	for x in range(world_size):
 		for y in range(world_size):
 			if get_entity_type() != Entities.Sunflower:
@@ -85,11 +86,17 @@ def run_sunflower():
 			move(North)
 		move(East)
 	
+	goal = before_time + initial_wait
+
+	# Give the flowers a bit o time to grow
+	while get_time() < goal:
+		pass
+
 	harvest_counter = HARVEST_DEFAULT
 	min_pedals = 7
 	max_pedals = 15
-	for j in range(0, max_pedals - min_pedals + 1):
-		i = max_pedals - j
+
+	for i in range(max_pedals, min_pedals - 1, -1):
 		if i not in sf_size_tracker:
 			continue
 		targets_list = sf_size_tracker[i]
@@ -103,12 +110,12 @@ def run_sunflower():
 			move_to_y_pos(target[1])
 			while not can_harvest() and num_items(Items.Fertilizer) > 1:
 				use_item(Items.Fertilizer)
-			if not can_harvest():
-				count += 1
+
 			harvest() # sometimes we harvest a sunflower that is not yet fully grown. TODO track these cases?
 			harvest_counter -= 1
-			if num_items(Items.Power) >= 100000:
-				return True
+			
+		if num_items(Items.Power) >= 100000:
+			return True
 	
 	return False
 		

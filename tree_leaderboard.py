@@ -1,16 +1,12 @@
-curr_x = 0
-curr_y = 0
 world_size = get_world_size()
 target_num = 100000
 
 companion_mapping = {}
 tree_mapping = {}
 
-def track_companion():
+def track_companion(curr_x, curr_y):
 	global companion_mapping
 	global hay_mapping
-	global curr_x
-	global curr_y
 	
 	target_entity, (target_x, target_y) = get_companion()
 	if not tree_tile(target_x, target_y) and (target_x, target_y) not in companion_mapping:
@@ -23,6 +19,8 @@ def tree_tile(curr_x, curr_y):
 	return curr_x % 2 == curr_y % 2
 
 while True:
+	curr_x = get_pos_x()
+	curr_y = get_pos_y()
 	if tree_tile(curr_x, curr_y):
 		if (curr_x, curr_y) in tree_mapping:
 			while not can_harvest():
@@ -34,7 +32,7 @@ while True:
 			tree_mapping.pop((curr_x, curr_y))
 			companion_mapping.pop(companion_pos)
 				
-		if track_companion() and get_water() < 0.13:
+		if track_companion(curr_x, curr_y) and get_water() < 0.10:
 			use_item(Items.Water)
 	elif (curr_x, curr_y) in companion_mapping:
 		target_entity = companion_mapping[(curr_x, curr_y)]
@@ -60,10 +58,7 @@ while True:
 		break
 
 	move(North)
-	curr_y += 1
-	if curr_y == world_size:
-		curr_y = 0
+	
+	curr_y = get_pos_y()
+	if curr_y == world_size - 1:
 		move(East)
-		curr_x += 1
-		if curr_x == world_size:
-			curr_x = 0

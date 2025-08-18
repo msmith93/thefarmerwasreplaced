@@ -11,12 +11,12 @@ def opposite_direction(direction):
 		return East
 
 def explore_option(direction):
-	if not move(direction):
-		return False
-	
 	if get_entity_type() == Entities.Treasure:
 		harvest()
 		return True
+
+	if not move(direction):
+		return False
 	
 	for explore_direction in ALL_DIRECTIONS:
 		if opposite_direction(explore_direction) != direction:
@@ -27,7 +27,6 @@ def explore_option(direction):
 
 while True:
 	clear()
-	change_hat(Hats.Straw_Hat)
 	plant(Entities.Bush)
 	n_substance = get_world_size() * num_unlocked(Unlocks.Mazes)
 	use_item(Items.Weird_Substance, n_substance)

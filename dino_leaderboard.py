@@ -10,7 +10,6 @@ offlimit_columns_stage2 = {
 clear()
 change_hat(Hats.Dinosaur_Hat)
 apple_pos = measure()
-apple_pos_queue = []
 squares_occupied = 1
 game_complete = False
 aggressive_stage = True
@@ -21,7 +20,6 @@ def measure_apple():
     global squares_occupied
     global apple_pos_queue
     apple_pos = measure()
-    apple_pos_queue += [apple_pos]
     squares_occupied += 1
     
 def move_and_check_apple(direction):
@@ -171,20 +169,17 @@ def move_to_right_col_wavy():
                 move(North)
             move(East)
 
-def find_origin():
-	curr_y = get_pos_y()
-	curr_x = get_pos_x()
+def find_top_left():
+	global world_size_minus_one
 	
-	if curr_x > 0 and not curr_x % 2:
+	while get_pos_x() > 0:
 		move(West)
-		while get_pos_y() > 0:
-			move(South)
-		while get_pos_x() > 0:
-			move(West)
-		
+	while get_pos_y() < world_size_minus_one:
+		move(North)
+	
 
 def transition_to_route():
-	find_origin()
+	find_top_left()
     move_to_right_col_wavy()
     while get_pos_y() != 0:
         move(South)
@@ -203,7 +198,7 @@ while aggressive_stage:
     while stage_2_apple_collect() and get_pos_x() > 0:
         pass
     
-    if squares_occupied > (world_size_minus_one) * 4 + 2:
+    if squares_occupied > (world_size_minus_one) * 4 - 4:
         break
 
 transition_to_route()

@@ -10,6 +10,7 @@ offlimit_columns_stage2 = {
 clear()
 change_hat(Hats.Dinosaur_Hat)
 apple_pos = measure()
+apple_pos_queue = []
 squares_occupied = 1
 game_complete = False
 aggressive_stage = True
@@ -18,7 +19,9 @@ aggressive_stage = True
 def measure_apple():
     global apple_pos
     global squares_occupied
+    global apple_pos_queue
     apple_pos = measure()
+    apple_pos_queue += [apple_pos]
     squares_occupied += 1
     
 def move_and_check_apple(direction):
@@ -101,7 +104,7 @@ def stage_1_apple_collect():
     global world_size_minus_one
     
     apple_pos_x, apple_pos_y = apple_pos
-    if apple_pos_y == 0 or apple_pos_x in edge_positions or (apple_pos_x in offlimit_columns_stage1 and apple_pos_y < offlimit_columns_stage1[apple_pos_x]):
+    if apple_pos_y == 0 or apple_pos_x in edge_positions or (apple_pos_x in offlimit_columns_stage1 and apple_pos_y <= offlimit_columns_stage1[apple_pos_x]):
         return transition_to_stage_2()
     else:
         apple_x_odd = apple_pos_x % 2
@@ -113,15 +116,9 @@ def stage_1_apple_collect():
             return transition_to_stage_2()
         else:
             move_to_col(target_x_pos)
-            if target_x_pos in offlimit_columns_stage1:
-                target_y_pos = offlimit_columns_stage1[apple_pos_x] + 1
-                move_to_row(target_y_pos)
-                offlimit_columns_stage2[target_x_pos] = target_y_pos
-                offlimit_columns_stage2[target_x_pos + 1] = target_y_pos
-            else:
-                move_to_row(apple_pos_y)
-                offlimit_columns_stage2[target_x_pos] = apple_pos_y
-                offlimit_columns_stage2[target_x_pos + 1] = apple_pos_y
+            move_to_row(apple_pos_y)
+            offlimit_columns_stage2[target_x_pos] = apple_pos_y
+            offlimit_columns_stage2[target_x_pos + 1] = apple_pos_y
             move_and_check_apple(East)
             move_to_row(world_size_minus_one)
     
@@ -135,7 +132,7 @@ def stage_2_apple_collect():
     global world_size_minus_one
     
     apple_pos_x, apple_pos_y = apple_pos
-    if apple_pos_y == world_size_minus_one or apple_pos_x in edge_positions or (apple_pos_x in offlimit_columns_stage2 and apple_pos_y > offlimit_columns_stage2[apple_pos_x]):
+    if apple_pos_y == world_size_minus_one or apple_pos_x in edge_positions or (apple_pos_x in offlimit_columns_stage2 and apple_pos_y >= offlimit_columns_stage2[apple_pos_x]):
         return transition_to_stage_1()
     else:
         apple_x_odd = apple_pos_x % 2
@@ -147,20 +144,53 @@ def stage_2_apple_collect():
             return transition_to_stage_1()
         else:
             move_to_col(target_x_pos)
-            if target_x_pos in offlimit_columns_stage2:
-                target_y_pos = offlimit_columns_stage2[apple_pos_x] - 1
-                move_to_row(target_y_pos)
-                offlimit_columns_stage1[target_x_pos] = target_y_pos
-                offlimit_columns_stage1[target_x_pos - 1] = target_y_pos
-            else:
-                move_to_row(apple_pos_y)
-                offlimit_columns_stage1[target_x_pos] = apple_pos_y
-                offlimit_columns_stage1[target_x_pos - 1] = apple_pos_y
             move_to_row(apple_pos_y)
+            offlimit_columns_stage1[target_x_pos] = apple_pos_y
+            offlimit_columns_stage1[target_x_pos - 1] = apple_pos_y
             move_and_check_apple(West)
             move_to_row(0)
     
     return True
+
+def move_to_right_col_wavy():
+    global world_size
+    global world_size_minus_one
+    global offlimit_columns_stage1
+
+    # Assume curr x is zero
+    for x in range(world_size):
+        if x % 2:
+            target_y = 1
+            if x in offlimit_columns_stage1:
+                target_y = offlimit_columns_stage1[x] + 1
+            while get_pos_y() != target_y:
+                move(South)
+            move(East)
+        else: # x is even, go up to top row, then move right
+            while get_pos_y() != world_size_minus_one:
+                move(North)
+            move(East)
+
+def find_origin():
+	curr_y = get_pos_y()
+	curr_x = get_pos_x()
+	
+	if curr_x > 0 and not curr_x % 2:
+		move(West)
+		while get_pos_y() > 0:
+			move(South)
+		while get_pos_x() > 0:
+			move(West)
+		
+
+def transition_to_route():
+	find_origin()
+    move_to_right_col_wavy()
+    while get_pos_y() != 0:
+        move(South)
+    while get_pos_x() != 0:
+        move(West)
+	
 
 # STAGE 1
 move_to_row(world_size_minus_one)
@@ -173,13 +203,10 @@ while aggressive_stage:
     while stage_2_apple_collect() and get_pos_x() > 0:
         pass
     
-    if squares_occupied > (world_size_minus_one) * 2:
+    if squares_occupied > (world_size_minus_one) * 4 + 2:
         break
 
-move_to_col(world_size_minus_one)
-move_to_row(0)
-move_to_col(0)
-
+transition_to_route()
 
 while True:
     for i in range(world_size / 2):
@@ -197,9 +224,7 @@ while True:
     
     if game_complete:
         break
-
+        
 change_hat(Hats.Straw_Hat)
 
-numbones = num_items(Items.Bone)
-if numbones < 98010:
-	pass
+

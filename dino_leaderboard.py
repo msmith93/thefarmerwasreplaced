@@ -1,3 +1,4 @@
+set_world_size(4)
 world_size = get_world_size()
 world_size_minus_one = world_size - 1
 
@@ -20,17 +21,82 @@ grid_data = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
-    
+
+ALL_DIRECTIONS = [North, South, East, West]
 
 
 clear()
 change_hat(Hats.Dinosaur_Hat)
-apple_pos = measure()
+apple_pos = (0,0)
 tail_positions = [(0,0)]
 tail_positions_set = set(tail_positions)
 squares_occupied = 1
 game_complete = False
-aggressive_stage = True
+
+def deque_is_empty(tail_positions):
+    return tail_positions["size"] == 0
+
+def deque_append(tail_positions, data):
+    new_node = {
+        "data": data,
+        "next": None,
+        "prev": None
+    }
+
+    if deque_is_empty(tail_positions):
+        tail_positions["head"] = new_node
+        tail_positions["tail"] = new_node
+    else:
+        tail_positions["tail"]["next"] = new_node
+        new_node["prev"] = tail_positions["tail"]
+        tail_positions["tail"] = new_node
+    tail_positions["size"] += 1
+
+def deque_appendleft(tail_positions, data):
+    new_node = {
+        "data": data,
+        "next": None,
+        "prev": None
+    }
+
+    if deque_is_empty(tail_positions):
+        tail_positions["head"] = new_node
+        tail_positions["tail"] = new_node
+    else:
+        tail_positions["head"]["prev"] = new_node
+        new_node["next"] = tail_positions["head"]
+        tail_positions["head"] = new_node
+    tail_positions["size"] += 1
+
+def deque_pop(tail_positions):
+    if deque_is_empty(tail_positions):
+        return None
+
+    data = tail_positions["tail"]["data"]
+    if tail_positions["head"] == tail_positions["tail"]:
+        tail_positions["head"] = None
+        tail_positions["tail"] = None
+    else:
+        tail_positions["tail"] = tail_positions["tail"]["prev"]
+        tail_positions["tail"]["next"] = None
+    tail_positions["size"] -= 1
+
+    return data
+
+def deque_popleft(tail_positions):
+    if deque_is_empty(tail_positions):
+        return None
+    
+    data = tail_positions["head"]["data"]
+    if tail_positions["head"] == tail_positions["tail"]:
+        tail_positions["head"] = None
+        tail_positions["tail"] = None
+    else:
+        tail_positions["head"] = tail_positions["head"]["next"]
+        tail_positions["head"]["prev"] = None
+    tail_positions["size"] -= 1
+
+    return data
 
 
 def measure_apple():
@@ -45,7 +111,14 @@ def move_and_check_apple(direction):
 	global tail_positions_set
 	global grid_data
     
-    curr_pos = (get_pos_x(), get_pos_y())
+    prev_pos = (get_pos_x(), get_pos_y())
+
+    if prev_pos == apple_pos:
+        measure_apple()
+    else:
+        popped_item = tail_positions.pop()
+        grid_data[popped_item[0]][popped_item[1]] = 0
+        tail_positions_set.remove(popped_item)
 
     if not move(direction):
         return False
@@ -57,13 +130,6 @@ def move_and_check_apple(direction):
     tail_positions_set.add(curr_pos)
     grid_data[curr_pos[0]][curr_pos[1]] = 1
         
-    if curr_pos == apple_pos:
-        measure_apple()
-    else:
-        popped_item = tail_positions.pop()
-        grid_data[popped_item[0]][popped_item[1]] = 0
-        tail_positions_set.remove(popped_item)
-
     return True
 
 def move_to_col(target_x_pos, do_measure=True):
@@ -257,25 +323,6 @@ def stage_2_apple_collect():
     
     return True
 
-def move_to_right_col_wavy():
-    global world_size
-    global world_size_minus_one
-    global offlimit_columns_stage1
-
-    # Assume curr x is zero
-    for x in range(world_size):
-        if x % 2:
-            target_y = 1
-            if x in offlimit_columns_stage1:
-                target_y = offlimit_columns_stage1[x] + 1
-            while get_pos_y() != target_y:
-                move(South)
-            move(East)
-        else: # x is even, go up to top row, then move right
-            while get_pos_y() != world_size_minus_one:
-                move(North)
-            move(East)
-
 def find_origin():
 	curr_y = get_pos_y()
 	curr_x = get_pos_x()
@@ -287,47 +334,69 @@ def find_origin():
 		while get_pos_x() > 0:
 			move(West)
 		
+def find_shortest_path():
+    global tail_positions
+    global tail_positions_set
+    global apple_pos
+    global ALL_DIRECTIONScurr_pos
+    global world_size
 
-def transition_to_route():
-	find_origin()
-    move_to_right_col_wavy()
-    while get_pos_y() != 0:
-        move(South)
-    while get_pos_x() != 0:
-        move(West)
-	
+    dino_head = tail_positions[0]
+    queue = {
+        "head": None,
+        "tail": None, 
+        "size": 0
+    }
+    deque_append(queue, (dino_head, [dino_head]))
 
-# STAGE 1
-move_to_row(world_size_minus_one)
+    visited = set(tail_positions)
+    
+    while not deque_is_empty(queue):
+        (current_x, current_y), path = deque_popleft(queue)
 
-while aggressive_stage:
-    while stage_1_apple_collect() and get_pos_x() < world_size_minus_one:
-        pass
+        if (current_x, current_y) == apple_pos:
+            return path
         
-    
-    while stage_2_apple_collect() and get_pos_x() > 0:
-        pass
-    
-    if squares_occupied > (world_size_minus_one) * 4 + 1:
-        break
+        for direction in ALL_DIRECTIONS:
+            next_x, next_y = (current_x, current_y)
+            if direction == West:
+                next_x -= 1
+            elif direction == North:
+                next_y += 1
+            elif direction == East:
+                next_x += 1
+            elif direction == South:
+                next_y -= 1
+            
+            
+            if (0 <= next_x < world_size and 0 <= next_y < world_size and (next_x, next_y) not in visited):
+                next_node = (next_x, next_y)
+                new_path = path + [next_node]
+                visited.add(next_node)
+                deque_append(queue, (next_node, new_path))
 
-transition_to_route()
+    return None
 
+move_and_check_apple(North)
 while True:
-    for i in range(world_size / 2):
-        game_complete = not move_to_row(world_size_minus_one, False)
-        game_complete = game_complete or not move(East)
-        game_complete = game_complete or not move_to_row(1, False)
-        if i != world_size / 2 - 1:
-            game_complete = game_complete or not move(East)
-        
-        if game_complete:
-            break
+    path = find_shortest_path()
+    head = tail_positions[0]
 
-    game_complete = game_complete or not move_to_row(0, False)
-    game_complete = game_complete or not move_to_col(0,False)
+    for step in path:
+        # if step[0] > head[0]:
+        #     move(South)
+        # elif step[0] < head[0]:
+        #     move(North)
+        # elif step[1] > head[1]:
+        #     move(East)
+        # elif step[1] < head[1]:
+        #     move(West)
+
+        move_to_col(step[0])
+        move_to_row(step[1])
     
-    if game_complete:
-        break
+    for direction in ALL_DIRECTIONS:
+        if move_and_check_apple(direction):
+            break
         
 change_hat(Hats.Straw_Hat)

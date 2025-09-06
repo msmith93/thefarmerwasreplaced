@@ -110,15 +110,6 @@ def move_and_check_apple(direction):
     global tail_positions
 	global tail_positions_set
 	global grid_data
-    
-    prev_pos = (get_pos_x(), get_pos_y())
-
-    if prev_pos == apple_pos:
-        measure_apple()
-    else:
-        popped_item = tail_positions.pop()
-        grid_data[popped_item[0]][popped_item[1]] = 0
-        tail_positions_set.remove(popped_item)
 
     if not move(direction):
         return False
@@ -129,6 +120,13 @@ def move_and_check_apple(direction):
     tail_positions.insert(0, curr_pos)
     tail_positions_set.add(curr_pos)
     grid_data[curr_pos[0]][curr_pos[1]] = 1
+    
+    if curr_pos == apple_pos:
+        measure_apple()
+    else:
+        popped_item = tail_positions.pop()
+        grid_data[popped_item[0]][popped_item[1]] = 0
+        tail_positions_set.remove(popped_item)
         
     return True
 
@@ -377,26 +375,15 @@ def find_shortest_path():
 
     return None
 
-move_and_check_apple(North)
+measure_apple()
 while True:
     path = find_shortest_path()
     head = tail_positions[0]
 
     for step in path:
-        # if step[0] > head[0]:
-        #     move(South)
-        # elif step[0] < head[0]:
-        #     move(North)
-        # elif step[1] > head[1]:
-        #     move(East)
-        # elif step[1] < head[1]:
-        #     move(West)
 
         move_to_col(step[0])
         move_to_row(step[1])
-    
-    for direction in ALL_DIRECTIONS:
-        if move_and_check_apple(direction):
-            break
+
         
 change_hat(Hats.Straw_Hat)

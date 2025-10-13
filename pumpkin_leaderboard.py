@@ -1,5 +1,5 @@
 world_size = get_world_size()
-target = 100000
+target = 10000000
 
 fert_target = 40 # 25 statistically
 water_target = 6 # 20 * 0.25 statistically
@@ -54,21 +54,6 @@ def till_soil():
 			move(North)
 		move(East)
 
-def pumpkin_is_full():
-	bot_left_id = measure()
-	move(West)
-	bot_right_id = measure()
-	move(East)
-	if not (bot_left_id and bot_right_id):
-		return False
-	return bot_left_id == bot_right_id
-
-def choose_mode(water_amt, fert_amt):
-	if water_amt > water_target and fert_amt > fert_target:
-		return "water_and_fert"
-	
-	return "normal"
-
 def plant_first_pass(world_size_loc=10):
 	global water_amt
 	global fert_amt
@@ -77,17 +62,10 @@ def plant_first_pass(world_size_loc=10):
 	
 	for x in range(world_size_loc):
 		for y in range(world_size_loc):
-			if get_water() < water_level_min:
-				use_item(Items.Water)
 
 			plant(Entities.Pumpkin)
 			move(North)
 		move(East)
-
-	water_amt = num_items(Items.Water)
-	fert_amt = num_items(Items.Fertilizer)
-	
-	mode = choose_mode(water_amt, fert_amt)
 
 def harvest_full_pumpkin(world_size_loc=10):
 	
@@ -107,7 +85,7 @@ def harvest_full_pumpkin(world_size_loc=10):
 	curr_fert_amt = num_items(Items.Fertilizer)
 	use_water_fert = False
 	
-	pumpkins_to_deal_with = len(dead_pumpkins_set) * 1.5
+	pumpkins_to_deal_with = len(dead_pumpkins_set) * 0.225
 	if curr_fert_amt > pumpkins_to_deal_with and curr_water_amt > pumpkins_to_deal_with * 0.25:
 		use_water_fert = True
 	
@@ -140,24 +118,6 @@ def harvest_full_pumpkin(world_size_loc=10):
 
 	harvest()
 
-def harvest_full_pumpkin_water_fert():
-	global world_size
-	
-	for x in range(world_size):
-		for y in range(world_size):
-			if get_entity_type() != Entities.Pumpkin:
-				if get_water() < 0.25:
-					use_item(Items.Water)
-				while True:
-					plant(Entities.Pumpkin)
-					use_item(Items.Fertilizer)
-					
-					if get_entity_type() == Entities.Pumpkin:
-						break
-			move(North)
-		move(East)
-		
-	harvest_full_pumpkin()
 	
 	
 till_soil()
@@ -165,14 +125,7 @@ harvest_full_pumpkin()
 
 num_pumpkins = num_items(Items.Pumpkin)
 while num_pumpkins < target:
-#while True:
-	if target - num_pumpkins < 1000:
-		move_to_x_pos(0)
-		move_to_y_pos(0)
-		plant_first_pass(5)
-		harvest_full_pumpkin(5)
-	else:
-		plant_first_pass()
-		harvest_full_pumpkin()
+	plant_first_pass(8)
+	harvest_full_pumpkin(8)
 	
 	num_pumpkins = num_items(Items.Pumpkin)

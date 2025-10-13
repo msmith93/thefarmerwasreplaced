@@ -1,11 +1,7 @@
+set_world_size(8)
 world_size = get_world_size()
 target = 10000000
 
-fert_target = 40 # 25 statistically
-water_target = 6 # 20 * 0.25 statistically
-water_level_min = 0.15
-fert_amt = 0
-water_amt = 0
 
 def move_to_x_pos(x_target):
 	global world_size
@@ -55,10 +51,6 @@ def till_soil():
 		move(East)
 
 def plant_first_pass(world_size_loc=10):
-	global water_amt
-	global fert_amt
-	global mode
-	global water_level_min
 	
 	for x in range(world_size_loc):
 		for y in range(world_size_loc):
@@ -94,8 +86,10 @@ def harvest_full_pumpkin(world_size_loc=10):
 			if pumpkin not in dead_pumpkins_set:
 				continue
 
-			move_to_x_pos(pumpkin[0])
-			move_to_y_pos(pumpkin[1])
+			move_x = pumpkin[0]
+			move_y = pumpkin[1]
+			move_to_x_pos(move_x)
+			move_to_y_pos(move_y)
 			
 			# Arrived at a spot where there was a dead pumpkin
 				# Could be a fully grown pumpkin ready to harvest
@@ -115,6 +109,31 @@ def harvest_full_pumpkin(world_size_loc=10):
 					use_item(Items.Fertilizer)
 					if get_entity_type() != Entities.Pumpkin:
 						plant(Entities.Pumpkin)
+			
+			if move_x == 0:
+				id1 = measure()
+				id2 = measure(West)
+				if id1 == id2:
+					harvest()
+					return
+			elif move_x == 7:
+				id1 = measure()
+				id2 = measure(East)
+				if id1 == id2:
+					harvest()
+					return
+			elif move_y == 0:
+				id1 = measure()
+				id2 = measure(South)
+				if id1 == id2:
+					harvest()
+					return
+			elif move_y == 7:
+				id1 = measure()
+				id2 = measure(North)
+				if id1 == id2:
+					harvest()
+					return
 
 	harvest()
 

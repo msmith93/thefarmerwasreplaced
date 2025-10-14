@@ -1,55 +1,47 @@
-companion_mapping = {}
-hay_mapping = {}
+world_size = 3
+set_world_size(world_size)
 
-def track_companion():
-	global companion_mapping
-	global hay_mapping
-	
-	target_entity, (target_x, target_y) = get_companion()
+counter = 0
+water_counter = 0
+water_threshold = 0.4
 
-	while target_entity == Entities.Carrot and num_items(Items.Wood) < 1:
+plant(Entities.Bush)
+move(North)
+plant(Entities.Bush)
+move(North)
+plant(Entities.Bush)
+move(East)
+plant(Entities.Bush)
+move(South)
+plant(Entities.Bush)
+move(South)
+plant(Entities.Bush)
+move(East)
+
+def run_hay():
+	global counter
+	global water_counter
+	global water_threshold
+
+	while True:
+		if not can_harvest():
+			counter += 1
 		harvest()
-		target_entity, (target_x, target_y) = get_companion()
 
-	if (target_x, target_y) not in companion_mapping:
-		companion_mapping[(target_x, target_y)] = target_entity
-		hay_mapping[(x_curr, y_curr)] = (target_x, target_y)	
+		if num_items(Items.Hay) > 100000000:
+			return
+		
+		if get_water() < water_threshold:
+			use_item(Items.Water)
+			water_counter += 1
 
-while True:
-	if num_items(Items.Hay) >= 100000:
-		break
-	
-	x_curr = get_pos_x()
-	y_curr = get_pos_y()
-	
-	if get_entity_type() == Entities.Grass:
-		if can_harvest():
+		companion, comp_pos = get_companion()
+		
+		while companion != Entities.Bush or comp_pos[0] == 2:
 			harvest()
-		if (x_curr, y_curr) in hay_mapping: # Had a companion that was already planted
-			companion_pos = hay_mapping[(x_curr, y_curr)]
-			hay_mapping.pop((x_curr, y_curr))
-			companion_mapping.pop(companion_pos)
-		
-		if (x_curr, y_curr) in companion_mapping: # Plant a companion
-			target_entity = companion_mapping[(x_curr, y_curr)]
-			if target_entity not in [Entities.Bush, Entities.Tree]:
-				till()
-			plant(target_entity)
-		else: # Only when current position is growing grass
-			track_companion() 
-		
-	else: # Entity is not grass AKA it is / was a companion
-		if (x_curr, y_curr) not in companion_mapping: # Companion has served its purpose
-			# Reset land back to grassland
-			if get_ground_type() != Grounds.Grassland:
-				till()
-			else:
-				harvest()
-		
-			track_companion()
+			companion, comp_pos = get_companion()
 
+		move(North)
 
-	if y_curr == get_world_size() - 1:
-		move(East)
-	move(North)
-	
+run_hay()
+pass

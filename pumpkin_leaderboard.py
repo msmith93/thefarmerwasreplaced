@@ -1,7 +1,14 @@
-set_world_size(8)
+#set_world_size(8)
 world_size = get_world_size()
 target = 10000000
 
+dir = North
+def change_dir():
+	global dir
+	if dir == North:
+		dir = South
+	else:
+		dir = North
 
 def move_to_x_pos(x_target):
 	global world_size
@@ -42,25 +49,33 @@ def move_to_y_pos(y_target):
 
 def till_soil():
 	global world_size
+	global dir
 	
 	for x in range(world_size):
 		for y in range(world_size):
 			till()
 			plant(Entities.Pumpkin)
-			move(North)
+			if y == world_size - 1:
+				break
+			move(dir)
+		change_dir()
+	
 		move(East)
 
 def plant_first_pass(world_size_loc=10):
-	
+	global dir
 	for x in range(world_size_loc):
 		for y in range(world_size_loc):
-
 			plant(Entities.Pumpkin)
-			move(North)
+			if y == world_size_loc - 1:
+				break
+			move(dir)
+		change_dir()
 		move(East)
 
 def harvest_full_pumpkin(world_size_loc=10):
-	
+	global dir
+
 	dead_pumpkins = []
 	
 	for x in range(world_size_loc):
@@ -68,7 +83,10 @@ def harvest_full_pumpkin(world_size_loc=10):
 			if get_entity_type() != Entities.Pumpkin or not can_harvest():
 				plant(Entities.Pumpkin)
 				dead_pumpkins.append((get_pos_x(), get_pos_y()))
-			move(North)
+			if y == world_size_loc - 1:
+				break
+			move(dir)
+		change_dir()
 		move(East)
 	
 	dead_pumpkins_set = set(dead_pumpkins)
@@ -140,7 +158,7 @@ def harvest_full_pumpkin(world_size_loc=10):
 	
 	
 till_soil()
-harvest_full_pumpkin()
+harvest_full_pumpkin(8)
 
 num_pumpkins = num_items(Items.Pumpkin)
 while num_pumpkins < target:
@@ -148,3 +166,4 @@ while num_pumpkins < target:
 	harvest_full_pumpkin(8)
 	
 	num_pumpkins = num_items(Items.Pumpkin)
+pass

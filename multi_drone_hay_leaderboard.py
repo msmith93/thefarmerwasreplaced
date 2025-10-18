@@ -21,19 +21,6 @@ def init_action():
 def harvest_action():
 	global water_threshold
 	
-    for i in range(100):
-		while not can_harvest():
-			pass
-		harvest_jitter()
-
-		companion, comp_pos = get_companion()
-	
-		while companion != Entities.Bush or not comp_pos[0] % 4:
-			harvest()
-			companion, comp_pos = get_companion()
-		
-		move(North)
-	
 	while True:
 		while not can_harvest():
 			pass

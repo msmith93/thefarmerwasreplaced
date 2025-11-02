@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     IMAGE_SIZE = (16,16)
     FONT_SIZE = 20
-    LETTERS = ['S', 'U', 'B', 'C', 'R', 'I', 'E']
+    LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     for letter in LETTERS:
         mat = letter_to_array_centered(letter, image_size=IMAGE_SIZE, font_size=FONT_SIZE)
         print(f"{letter}_pixels = {mat.tolist()}")

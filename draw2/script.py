@@ -50,7 +50,7 @@ def letter_to_array_centered(letter, image_size=(32,32), font_path=None, font_si
 
 # Example usage
 if __name__ == "__main__":
-    mat = letter_to_array_centered('S', image_size=(32,32), font_size=26)
+    mat = letter_to_array_centered('E', image_size=(32,32), font_size=26)
     print(mat.tolist())
     for row in mat:
         print(''.join('#' if v else ' ' for v in row))

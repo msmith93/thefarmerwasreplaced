@@ -86,11 +86,13 @@ def composite_letters(offset):
 		# Composite each letter at its own position
 		for letter_idx in range(len(letter_arrays)):
 			letter_array = letter_arrays[letter_idx]
+            letter_width = 32 - PADDING_TO_REMOVE * 2
+            letter_base = letter_idx * letter_width
+            
 			if row_idx < len(letter_array):
 				# Each letter is positioned based on its width (32 - PADDING_TO_REMOVE * 2)
 				letter_row = letter_array[row_idx]
-				letter_width = 32 - PADDING_TO_REMOVE * 2
-				letter_base = letter_idx * letter_width
+				
 				# For each pixel in the final 32x32 canvas
 				for col_idx in range(32):
 					# Calculate where this pixel is in the wide canvas

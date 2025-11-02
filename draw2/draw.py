@@ -3,14 +3,20 @@ world_size = get_world_size()
 
 EMPTY_LIST = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-# Function to remove 5 columns from left and right of each letter array
+# Global variable to control padding removal
+PADDING_TO_REMOVE = 10 # Number of columns to remove from left and right of each letter
+
+# Function to remove padding from left and right of each letter array
 def remove_padding(pixel_array):
     result = []
     for row in pixel_array:
-        # Remove first 5 and last 5 columns, keep the middle
-        new_row = row
-        if len(row) > 10:
-            new_row = row[5:-5]
+        # Remove padding from each side, keep the middle
+        if PADDING_TO_REMOVE == 0:
+            new_row = row
+        elif len(row) > PADDING_TO_REMOVE * 2:
+            new_row = row[PADDING_TO_REMOVE:-PADDING_TO_REMOVE]
+        else:
+            new_row = row
         result.append(new_row)
     return result
 
@@ -81,15 +87,16 @@ def composite_letters(offset):
         for letter_idx in range(len(letter_arrays)):
             letter_array = letter_arrays[letter_idx]
             if row_idx < len(letter_array):
-                # Each letter is positioned at letter_idx * 22 in the wide canvas (after removing 5 cols from each side)
+                # Each letter is positioned based on its width (32 - PADDING_TO_REMOVE * 2)
                 letter_row = letter_array[row_idx]
-                letter_base = letter_idx * 22
+                letter_width = 32 - PADDING_TO_REMOVE * 2
+                letter_base = letter_idx * letter_width
                 # For each pixel in the final 32x32 canvas
                 for col_idx in range(32):
                     # Calculate where this pixel is in the wide canvas
                     wide_col = col_idx - offset
                     # Check if it falls within this letter's range
-                    if wide_col >= letter_base and wide_col < letter_base + 22:
+                    if wide_col >= letter_base and wide_col < letter_base + letter_width:
                         # Get the pixel from the letter
                         source_col = wide_col - letter_base
                         if source_col >= 0 and source_col < len(letter_row):

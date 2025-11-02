@@ -153,7 +153,7 @@ def composite_letters(offset):
 
 # Get letters to composite
 letter_arrays = []
-for char in "THANKS FOR WATCHING US DO THE MULTI DRONE CACTUS CHALLENGE SUBSCRIBE FOR MORE":
+for char in "SUBSCRIBE IF YOURE NOT GAY LMAO":
 	letter_arrays.append(letter_pixels[char])
 
 # Calculate total scroll distance needed

@@ -1,11 +1,14 @@
 clear()
-set_world_size(16)
 world_size = get_world_size()
 
-EMPTY_LIST = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# Create EMPTY_LIST manually since * operator doesn't work
+EMPTY_LIST = []
+for i in range(world_size):
+	EMPTY_LIST.append(0)
 
 # Global variable to control padding removal
-PADDING_TO_REMOVE = 2 # Number of columns to remove from left and right of each letter
+PADDING_TO_REMOVE = 9 # Number of columns to remove from left and right of each letter
+drones = []
 
 # Function to remove padding from left and right of each letter array
 def remove_padding(pixel_array):
@@ -62,8 +65,8 @@ def get_combined_pixels(text):
 	
 	combined = []
 	for row_idx in range(world_size):
-		# Create a new list for each row (copy EMPTY_LIST)
-		new_row = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		# Create a new list for each row
+		new_row = EMPTY_LIST[:]
 		for letter_array in letter_arrays:
 			if row_idx < len(letter_array):
 				# Get the row from this letter and composite it (OR operation)
@@ -80,28 +83,26 @@ def get_combined_pixels(text):
 # Create composite function for a specific offset
 def composite_letters(offset):
 	global EMPTY_LIST 
+	# Calculate letter width once (loop invariant)
+	letter_width = world_size - PADDING_TO_REMOVE * 2
 	combined = []
 	for row_idx in range(world_size):
-		# Create a new list for each row (copy EMPTY_LIST)
-		new_row = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		# Composite each letter at its own position
-		for letter_idx in range(len(letter_arrays)):
-			letter_array = letter_arrays[letter_idx]
-            letter_width = world_size - PADDING_TO_REMOVE * 2
-            letter_base = letter_idx * letter_width
-            
-			if row_idx < len(letter_array):
-				# Each letter is positioned based on its width (world_size - PADDING_TO_REMOVE * 2)
-				letter_row = letter_array[row_idx]
-				
-				# For each pixel in the final world_sizexworld_size canvas
-				for col_idx in range(world_size):
-					# Calculate where this pixel is in the wide canvas
-					wide_col = col_idx - offset
-					# Check if it falls within this letter's range
-					if wide_col >= letter_base and wide_col < letter_base + letter_width:
-						# Get the pixel from the letter
-						source_col = wide_col - letter_base
+		# Create a new list for each row
+		new_row = EMPTY_LIST[:]
+		# For each pixel in the final world_sizexworld_size canvas
+		for col_idx in range(world_size):
+			# Calculate where this pixel is in the wide canvas
+			wide_col = col_idx - offset
+			# Determine which letter this pixel maps to
+			if wide_col >= 0:
+				letter_idx = wide_col // letter_width
+				# Check if this letter exists
+				if letter_idx < len(letter_arrays):
+					letter_array = letter_arrays[letter_idx]
+					if row_idx < len(letter_array):
+						letter_row = letter_array[row_idx]
+						# Determine column within that letter
+						source_col = wide_col % letter_width
 						if source_col >= 0 and source_col < len(letter_row):
 							if new_row[col_idx] < letter_row[source_col]:
 								new_row[col_idx] = letter_row[source_col]
@@ -113,6 +114,10 @@ def composite_letters(offset):
 letter_arrays = []
 for char in "SUBSCRIBE":
 	letter_arrays.append(letter_pixels[char])
+
+# Calculate total scroll distance needed
+letter_width = world_size - PADDING_TO_REMOVE * 2
+total_scroll_distance = world_size + len(letter_arrays) * letter_width
 
 def shift_right_no_wrap(matrix, x):
 	global EMPTY_LIST 
@@ -144,14 +149,17 @@ def wait_for_drones(drones):
 	for drone in drones:
 		wait_for(drone)
 
-move(South)
-for i in range(world_size * 9):
+for i in range(len(S_pixels)):
+	move(North)
+for i in range(total_scroll_distance):
 	curr_pixels = composite_letters(world_size - i)
+
+	wait_for_drones(drones)
 
 	drones = []
 
-	for column in curr_pixels:
-		curr_col = column
+	for i in range(len(S_pixels)):
+		curr_col = curr_pixels[i]
 
 		while num_drones() >= max_drones():
 			pass
@@ -159,7 +167,8 @@ for i in range(world_size * 9):
 		drones.append(spawn_drone(run_col))
 		move(South)
 
-	wait_for_drones(drones)
+	for i in range(len(S_pixels)):
+		move(North)
 
 	# run_col()
 	# move(East)

@@ -1,6 +1,7 @@
 clear()
 world_size = get_world_size()
 
+drones = []
 EMPTY_LIST = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 # Global variable to control padding removal
@@ -147,6 +148,8 @@ move(South)
 for i in range(world_size * 8):
 	curr_pixels = composite_letters(world_size - i)
 
+	wait_for_drones(drones)
+    
 	drones = []
 
 	for column in curr_pixels:
@@ -158,7 +161,6 @@ for i in range(world_size * 8):
 		drones.append(spawn_drone(run_col))
 		move(South)
 
-	wait_for_drones(drones)
 
 	# run_col()
 	# move(East)

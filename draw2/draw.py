@@ -88,7 +88,7 @@ def composite_letters(offset):
 			letter_array = letter_arrays[letter_idx]
             letter_width = 32 - PADDING_TO_REMOVE * 2
             letter_base = letter_idx * letter_width
-            
+
 			if row_idx < len(letter_array):
 				# Each letter is positioned based on its width (32 - PADDING_TO_REMOVE * 2)
 				letter_row = letter_array[row_idx]
@@ -144,7 +144,7 @@ def wait_for_drones(drones):
 		wait_for(drone)
 
 move(South)
-for i in range(world_size * 20):
+for i in range(world_size * 8):
 	curr_pixels = composite_letters(world_size - i)
 
 	drones = []

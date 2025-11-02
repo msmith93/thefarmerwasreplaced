@@ -14,8 +14,10 @@ def letter_to_array_centered(letter, image_size=(32,32), font_path=None, font_si
         if font_path:
             font = ImageFont.truetype(font_path, font_size)
         else:
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
+            font = ImageFont.truetype("FreeMonoBold.ttf", font_size)
     except Exception:
+        print("Oh no!")
+        sys.exit(1)
         font = ImageFont.load_default()
 
     # Try to get precise glyph bbox (font.getbbox preferred)
@@ -50,7 +52,14 @@ def letter_to_array_centered(letter, image_size=(32,32), font_path=None, font_si
 
 # Example usage
 if __name__ == "__main__":
-    mat = letter_to_array_centered('E', image_size=(32,32), font_size=26)
-    print(mat.tolist())
-    for row in mat:
-        print(''.join('#' if v else ' ' for v in row))
+
+    IMAGE_SIZE = (16,16)
+    FONT_SIZE = 20
+    LETTERS = ['S', 'U', 'B', 'C', 'R', 'I', 'E']
+    for letter in LETTERS:
+        mat = letter_to_array_centered(letter, image_size=IMAGE_SIZE, font_size=FONT_SIZE)
+        print(f"{letter}_pixels = {mat.tolist()}")
+
+       #for row in mat:
+       #     print(''.join('#' if v else ' ' for v in row))
+    

@@ -3,12 +3,14 @@ from hay import harvest_hay
 
 def harvest_carrot(num_carrot):
 	curr_wood = num_items(Items.Wood)
-	needed_wood = get_cost(Entities.Carrot)[Items.Wood] * num_carrot
+	cost_carrot = 1
+	needed_wood = cost_carrot * num_carrot + get_cost(Entities.Carrot)[Items.Wood]
 	if curr_wood < needed_wood:
 		harvest_wood(needed_wood - curr_wood)
 	
 	curr_hay = num_items(Items.Hay)
-	needed_hay = get_cost(Entities.Carrot)[Items.Hay] * num_carrot
+	cost_hay = 1
+	needed_hay = cost_hay * num_carrot + get_cost(Entities.Carrot)[Items.Hay]
 	if curr_hay < needed_hay:
 		harvest_hay(needed_hay - curr_hay)
 

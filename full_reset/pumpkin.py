@@ -135,6 +135,18 @@ def harvest_full_pumpkin(world_size=8):
 
 	harvest()
 
+def calculate_pumpkins_planted(pumpkins_needed):
+	# With pumpkin merging, we can yield more pumpkins than we plant!
+	# Do not plant too many more pumpkins than needed
+	global world_size
+
+	dead_pumpkin_buffer = 5
+
+	pumpkin_multiplier = min(world_size, 6)
+	
+	return dead_pumpkin_buffer * pumpkins_needed / pumpkin_multiplier
+	
+
 def harvest_pumpkin(num_pumpkins):
 	global world_size
 	starting_pumpkins = num_items(Items.Pumpkin)
@@ -143,7 +155,7 @@ def harvest_pumpkin(num_pumpkins):
 	world_size = get_world_size()
 
 	curr_carrots = num_items(Items.Carrot)
-	needed_carrots = get_cost(Entities.Pumpkin)[Items.Carrot] * num_pumpkins
+	needed_carrots = calculate_pumpkins_planted(num_pumpkins)
 	if curr_carrots < needed_carrots:
 		harvest_carrot(needed_carrots - curr_carrots)
 

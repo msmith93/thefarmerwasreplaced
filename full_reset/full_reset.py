@@ -27,7 +27,7 @@ unlock_order = [Unlocks.Speed, Unlocks.Expand,
 	Unlocks.Mazes, Unlocks.Megafarm, Unlocks.Megafarm,
 	Unlocks.Cactus, Unlocks.Mazes, Unlocks.Megafarm,
 	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Cactus,
-	Unlocks.Mazes, Unlocks.Dinosaurs]
+	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Expand]
 
 harvest_funcs = {
 #   Item type       :   harvest func,

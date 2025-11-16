@@ -1,6 +1,7 @@
 from carrot import harvest_carrot
 
 world_size = 1
+first_pass = True
 
 def move_to_x_pos(x_target, world_size=8):
 	x_curr = get_pos_x()
@@ -145,14 +146,56 @@ def calculate_pumpkins_planted(pumpkins_needed):
 	pumpkin_multiplier = min(world_size, 6)
 	
 	return dead_pumpkin_buffer * pumpkins_needed / pumpkin_multiplier
+
+
+def check_pumpkin():
+	left_id = measure()
+	move(West)
+	right_id = measure()
+	move(East)
+	return left_id == right_id
+
+def wait_for_drones(drones):
+	for drone in drones:
+		wait_for(drone)
+
+def plant_column():
+	global world_size
+	global first_pass
 	
+	for j in range(world_size):
+		if get_entity_type() != Entities.Pumpkin:
+			if get_ground_type() != Grounds.Soil:
+				till()
+			plant(Entities.Pumpkin)
+				
+			if not first_pass:
+				while not can_harvest():
+					if get_entity_type() == Entities.Dead_Pumpkin:
+						plant(Entities.Pumpkin)
+					use_item(Items.Fertilizer)
+		move(North)
+
+def plant_pumpkins():
+	global world_size
+	
+	# Assume we're at the origin
+	drones = []
+	
+	for i in range(world_size - 1):
+		drones.append(spawn_drone(plant_column))
+		move(East)
+	
+	plant_column()
+	move(East)
+	wait_for_drones(drones)
 
 def harvest_pumpkin(num_pumpkins):
 	global world_size
+	global first_pass
+
 	starting_pumpkins = num_items(Items.Pumpkin)
 	ending_pumpkins = starting_pumpkins + num_pumpkins
-	
-	world_size = get_world_size()
 
 	curr_carrots = num_items(Items.Carrot)
 	needed_carrots = calculate_pumpkins_planted(num_pumpkins)
@@ -160,9 +203,26 @@ def harvest_pumpkin(num_pumpkins):
 		harvest_carrot(needed_carrots - curr_carrots)
 
 
-	till_soil(world_size)
-	harvest_full_pumpkin(world_size)
+	if num_unlocked(Unlocks.Megafarm) < 3:
+		world_size = get_world_size()
 
-	while num_items(Items.Pumpkin) < ending_pumpkins:
-		plant_first_pass(world_size)
+		till_soil(world_size)
 		harvest_full_pumpkin(world_size)
+
+		while num_items(Items.Pumpkin) < ending_pumpkins:
+			plant_first_pass(world_size)
+			harvest_full_pumpkin(world_size)
+	else:
+		orig_world_size = get_world_size()
+		clear()
+		set_world_size(max_drones())
+		world_size = get_world_size()
+
+		while num_items(Items.Pumpkin) < ending_pumpkins:
+			plant_pumpkins()
+			first_pass = False
+			if check_pumpkin():
+				harvest()
+				first_pass = True
+		
+		set_world_size(orig_world_size)

@@ -114,8 +114,13 @@ def harvest_cacti(num_cacti):
 	world_size = get_world_size()
 
 	curr_pumpkin = num_items(Items.Pumpkin)
-	cacti_harvested_each_loop = (world_size * world_size) ** 2
-	needed_pumpkin = ((num_cacti + cacti_harvested_each_loop - 1) // cacti_harvested_each_loop)
+	cacti_harvested_each_loop = (world_size * world_size) ** 2 * (2 ** (num_unlocked(Unlocks.Cactus) - 1))
+
+	needed_loops = (num_cacti + cacti_harvested_each_loop - 1) // cacti_harvested_each_loop
+	# needed loops: number of loops
+	cactus_planted_per_loop = world_size * world_size # cactus / loop
+	needed_cactus_planted = cactus_planted_per_loop * needed_loops # cactus planted total
+	needed_pumpkin = needed_cactus_planted * get_cost(Entities.Cactus)[Items.Pumpkin]
 	if curr_pumpkin < needed_pumpkin:
 		harvest_pumpkin(needed_pumpkin - curr_pumpkin)
 

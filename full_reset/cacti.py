@@ -1,4 +1,5 @@
 from pumpkin import harvest_pumpkin
+from power import harvest_power
 
 world_size = 1
 
@@ -123,6 +124,10 @@ def harvest_cacti(num_cacti):
 	needed_pumpkin = needed_cactus_planted * get_cost(Entities.Cactus)[Items.Pumpkin]
 	if curr_pumpkin < needed_pumpkin:
 		harvest_pumpkin(needed_pumpkin - curr_pumpkin)
+	
+	# needed_power = needed_loops * world_size ** 2
+	# if num_items(Items.Power) < needed_power:
+	# 	harvest_power(needed_power)
 
 	ending_cacti = num_items(Items.Cactus) + num_cacti
 	

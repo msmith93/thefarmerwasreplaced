@@ -127,3 +127,4 @@ def harvest_gold(num_gold):
 			if explore_option(direction):
 				break
 
+

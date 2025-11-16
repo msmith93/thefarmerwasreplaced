@@ -164,7 +164,8 @@ def run_drone():
 
 def wait_for_drones(drones):
 	for drone in drones:
-		wait_for(drone)
+		if drone:
+			wait_for(drone)
 
 def run_sunflower_multi():
 	global world_size
@@ -191,6 +192,7 @@ def run_sunflower_multi():
 
 def harvest_power(num_power):
 	global world_size
+	clear()
 
 	curr_carrots = num_items(Items.Carrot)
 	needed_carrots = get_cost(Entities.Sunflower)[Items.Carrot] * num_power
@@ -217,3 +219,4 @@ def harvest_power(num_power):
 			run_sunflower_multi()
 		
 		set_world_size(orig_world_size)
+

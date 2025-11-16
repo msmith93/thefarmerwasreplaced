@@ -6,6 +6,7 @@ from pumpkin import harvest_pumpkin
 from gold import harvest_gold
 from weird_substance import harvest_weird_substance
 from cacti import harvest_cacti
+from bone import harvest_bone
 
 POWER_THRESHOLD = 250
 
@@ -27,7 +28,17 @@ unlock_order = [Unlocks.Speed, Unlocks.Expand,
 	Unlocks.Mazes, Unlocks.Megafarm, Unlocks.Megafarm,
 	Unlocks.Cactus, Unlocks.Mazes, Unlocks.Megafarm,
 	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Cactus,
-	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Expand]
+	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Hats,
+	Unlocks.Polyculture, Unlocks.Polyculture, Unlocks.Grass,
+	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, 
+	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, 
+	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, Unlocks.Grass,
+	Unlocks.Megafarm, Unlocks.Megafarm,
+	Unlocks.Trees, Unlocks.Carrots, Unlocks.Pumpkins,
+	Unlocks.Dinosaurs, Unlocks.Dinosaurs,
+	Unlocks.Cactus, Unlocks.Mazes, Unlocks.Mazes,
+	Unlocks.Leaderboard
+	]
 
 harvest_funcs = {
 #   Item type       :   harvest func,
@@ -39,8 +50,9 @@ harvest_funcs = {
 	Items.Gold		:   harvest_gold,
 	Items.Weird_Substance : harvest_weird_substance,
 	Items.Cactus    :   harvest_cacti,
+	Items.Bone		:	harvest_bone,
 }
-harvesting_order = [Items.Gold, Items.Weird_Substance, Items.Cactus, Items.Pumpkin, Items.Carrot, Items.Wood, Items.Hay]
+harvesting_order = [Items.Bone, Items.Gold, Items.Weird_Substance, Items.Cactus, Items.Pumpkin, Items.Carrot, Items.Wood, Items.Hay]
 
 def harvest_all(items_needed, unlock_num):
 	if num_unlocked(Unlocks.Sunflowers) and num_items(Items.Power) < POWER_THRESHOLD:
@@ -67,5 +79,6 @@ for i in range(len(unlock_order)):
 	unlck = unlock_order[i]
 	unlock_wrapper(unlck, i)
 
-while True:
-	do_a_flip()
+do_a_flip()
+#while True:
+#	do_a_flip()

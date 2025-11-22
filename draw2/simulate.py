@@ -14,7 +14,7 @@ sim_globals = {
 	"draw_string": "SUB",
 }
 seed = 0
-speedup = 1000
+speedup = 64
 
 while True:
 	simulate(filename, sim_unlocks, sim_items, sim_globals, seed, speedup)

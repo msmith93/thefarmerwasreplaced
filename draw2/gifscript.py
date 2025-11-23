@@ -24,7 +24,7 @@ def gif_to_arrays(path, size=(32, 32), threshold=128):
 
 # Example usage
 if __name__ == "__main__":
-    frames = gif_to_arrays("images/yinyangwarp.gif", size=(32, 32), threshold=128)
+    frames = gif_to_arrays("images/yinyangspin.gif", size=(32, 32), threshold=128)
 
     frame_pixels = []
     for frame in frames:

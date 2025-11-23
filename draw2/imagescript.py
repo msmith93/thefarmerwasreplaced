@@ -97,7 +97,7 @@ def image_to_array_4_values(image_path, thresholds=[64, 128, 192], resize=None):
 # Example usage
 if __name__ == "__main__":
     
-    image = image_to_array("images/gengar.jpg", resize=(32, 32))
+    image = image_to_array("images/yin_yang.jpg", resize=(32, 32))
 
     nums = []
     for bitlist in image:
@@ -110,12 +110,12 @@ if __name__ == "__main__":
         nums += [num]
 
     print(nums)
-    # for row in mat:
-    #     for char in row:
-    #         if char == 0:
-    #             print(' ', end='')
-    #         elif char == 1:
-    #             print('#', end='')
-    #     print()
+    for row in image:
+        for char in row:
+            if char == 0:
+                print('0', end='')
+            elif char == 1:
+                print('1', end='')
+        print()
 
 

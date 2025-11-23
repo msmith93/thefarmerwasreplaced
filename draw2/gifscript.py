@@ -12,7 +12,7 @@ def gif_to_arrays(path, size=(32, 32), threshold=128):
                 frame = im.convert("L").resize(size)
                 # Convert to binary 0/1
                 mat = [
-                    [1 if frame.getpixel((x, y)) < threshold else 0 for x in range(size[0])]
+                    [0 if frame.getpixel((x, y)) < threshold else 1 for x in range(size[0])]
                     for y in range(size[1])
                 ]
                 frames.append(mat)
@@ -24,19 +24,29 @@ def gif_to_arrays(path, size=(32, 32), threshold=128):
 
 # Example usage
 if __name__ == "__main__":
-    frames = gif_to_arrays("images/coolgif.gif", size=(32, 32), threshold=128)
+    frames = gif_to_arrays("images/yinyangwarp.gif", size=(32, 32), threshold=128)
 
     frame_pixels = []
     for frame in frames:
         nums = []
-        for bitlist in frame:
+        for rowpixels in frame:
 
             num = 0
-            for bit in bitlist:
-                num = (num << 1) | bit
+            for pixel in rowpixels:
+                num = (num << 1) | pixel
 
             nums += [num]
         # print(nums)
         frame_pixels += [nums]
     
     print(frame_pixels)
+
+    # Visualize
+    # for frame in frames:
+    #     for row in frame:
+    #         for char in row:
+    #             if char == 0:
+    #                 print(' ', end='')
+    #             elif char == 1:
+    #                 print('#', end='')
+    #         print()

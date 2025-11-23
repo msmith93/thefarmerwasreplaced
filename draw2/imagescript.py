@@ -1,3 +1,28 @@
+# Example: Convert an image file to numpy array (binary 0/1)
+# mat = image_to_array("your_image.png")
+# print(f"Shape: {mat.shape}")
+
+# Example with resize parameter (binary 0/1)
+# mat = image_to_array("your_image.png", resize=(16, 16))
+# print(f"Shape: {mat.shape}")
+
+# # Example with 4-value conversion (0/1/2/3)
+# mat = image_to_array_4_values("images/drone.png", resize=(32, 32), thresholds=[125, 150, 250])
+# print(f"Shape: {mat.shape}")
+# print(f"Array:\n{mat.tolist()}")
+
+# for row in mat:
+#     for char in row:
+#         if char == 0:
+#             print(' ', end='')
+#         elif char == 1:
+#             print('#', end='')
+#         elif char == 2:
+#             print('*', end='')
+#         elif char == 3:
+#             print('+', end='')
+#     print()
+
 from PIL import Image
 import numpy as np
 
@@ -29,7 +54,7 @@ def image_to_array(image_path, threshold=128, resize=None):
     # Convert to binary array (0s and 1s) based on threshold
     binary_arr = (arr > threshold).astype(int)
     
-    return binary_arr
+    return binary_arr.tolist()
 
 
 def image_to_array_4_values(image_path, thresholds=[64, 128, 192], resize=None):
@@ -69,47 +94,28 @@ def image_to_array_4_values(image_path, thresholds=[64, 128, 192], resize=None):
     
     return result
 
-
 # Example usage
 if __name__ == "__main__":
-    # Example: Convert an image file to numpy array (binary 0/1)
-    # mat = image_to_array("your_image.png")
-    # print(f"Shape: {mat.shape}")
     
-    # Example with resize parameter (binary 0/1)
-    # mat = image_to_array("your_image.png", resize=(16, 16))
-    # print(f"Shape: {mat.shape}")
-    
-    # # Example with 4-value conversion (0/1/2/3)
-    # mat = image_to_array_4_values("images/drone.png", resize=(32, 32), thresholds=[125, 150, 250])
-    # print(f"Shape: {mat.shape}")
-    # print(f"Array:\n{mat.tolist()}")
+    image = image_to_array("images/gengar.jpg", resize=(32, 32))
 
+    nums = []
+    for bitlist in image:
+        print(bitlist)
+
+        num = 0
+        for bit in bitlist:
+            num = (num << 1) | bit
+
+        nums += [num]
+
+    print(nums)
     # for row in mat:
     #     for char in row:
     #         if char == 0:
     #             print(' ', end='')
     #         elif char == 1:
     #             print('#', end='')
-    #         elif char == 2:
-    #             print('*', end='')
-    #         elif char == 3:
-    #             print('+', end='')
     #     print()
-    
-    mat = image_to_array("images/gengar.jpg", resize=(32, 32))
-    matlist = mat.tolist()
-    for lst in matlist:
-        print(lst)
-
-    for row in mat:
-        for char in row:
-            if char == 0:
-                print(' ', end='')
-            elif char == 1:
-                print('#', end='')
-        print()
-    
-    pass
 
 

@@ -85,11 +85,12 @@ Runs a script in the game. Accepts JSON body:
 | `mode`     | No       | `execute`     | `"execute"` for direct run, `"simulate"` for leaderboard-style simulation |
 | `seed`     | No       | `-1`          | RNG seed for simulate mode (-1 = random)                                  |
 | `items`    | No       | `{}`          | Starting items for simulate mode (e.g. `{"cactus": 1000000000}`)          |
+| `unlocks`  | No       | all at max    | Unlocks for simulate mode (e.g. `{"speed": 3, "expand": 1}`)             |
 
 **Modes:**
 
 - **`execute`** - Runs the script directly in the current game state. Fast, good for quick tests. Uses the game's live farm.
-- **`simulate`** - Runs via `ScheduleLeaderboardStart` with `LeaderboardType.simulation`. Starts a fresh farm with all unlocks at max level and the specified items. This is the same as calling `simulate()` from in-game code.
+- **`simulate`** - Runs via `ScheduleLeaderboardStart` with `LeaderboardType.simulation`. Starts a fresh farm with the specified unlocks and items. By default all unlocks are at max level. This is the same as calling `simulate()` from in-game code.
 
 **Response:**
 
@@ -173,6 +174,20 @@ while true; do
 done
 ```
 
+### Run a simulation with specific unlocks
+
+```bash
+curl -X POST http://localhost:8787/run-script -d '{
+  "code": "quick_print(\"speed test\")",
+  "mode": "simulate",
+  "seed": 1,
+  "unlocks": {"speed": 3, "plant": 1},
+  "items": {"cactus": 1000000000, "power": 1000000000}
+}'
+```
+
+If `unlocks` is omitted, all unlocks default to max level. Values are levels for multi-unlocks (clamped to the unlock's max); any value >= 1 means "unlocked" for non-multi-unlocks. Unknown unlock names are logged as warnings.
+
 ### Run a diagnostic script from file
 
 ```bash
@@ -204,7 +219,7 @@ GameBridge.cs      - Safe wrappers around game APIs (save paths, code windows, i
 
 - HTTP listener runs on a background thread
 - All game state access is dispatched to Unity's main thread via a `ConcurrentQueue<Action>` drained in `Update()`
-- Simulate mode uses `MainSim.ScheduleLeaderboardStart()` with all unlocks at max level
+- Simulate mode uses `MainSim.ScheduleLeaderboardStart()` with configurable unlocks (defaults to all at max level)
 - Output is read from the game's `Logger` static class (`quick_print()` output)
 
 ## Notes

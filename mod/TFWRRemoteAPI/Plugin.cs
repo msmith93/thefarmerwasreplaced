@@ -280,18 +280,7 @@ namespace TFWRRemoteAPI
 
                     if (mode == "simulate")
                     {
-                        // Build simulation args: all unlocks at max level
-                        // Format: "name_N" where N is a large power-of-2 to trigger max level
-                        // The Farm constructor parses N via Log2(N+1) clamped to maxUnlockLevel
-                        var unlockList = new List<string>();
-                        foreach (var u in ResourceManager.GetAllUnlocks())
-                        {
-                            unlockList.Add(u.unlockName);
-                            if (u.IsMultiUnlock)
-                            {
-                                unlockList.Add($"{u.unlockName}_{u.maxUnlockLevel}");
-                            }
-                        }
+                        var unlockList = GameBridge.ParseUnlocks(body);
                         var items = GameBridge.ParseItems(body);
 
                         var args = new MainSim.LeaderboardStartArgs(

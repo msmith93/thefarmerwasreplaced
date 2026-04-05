@@ -91,6 +91,86 @@ namespace TFWRRemoteAPI
         }
 
         /// <summary>
+        /// Parse unlocks from JSON body into a list of unlock strings.
+        /// Expects an optional "unlocks" key with sub-object like {"speed": 3, "expand": 1}.
+        /// Values are levels for multi-unlocks; any value >= 1 means "unlocked" for non-multi-unlocks.
+        /// If "unlocks" key is absent, defaults to all unlocks at max level.
+        /// </summary>
+        public static List<string> ParseUnlocks(string json)
+        {
+            var unlockList = new List<string>();
+
+            // Check if "unlocks" key exists in the JSON
+            int idx = json.IndexOf("\"unlocks\"");
+            if (idx < 0)
+            {
+                // Default: all unlocks at max level
+                foreach (var u in ResourceManager.GetAllUnlocks())
+                {
+                    unlockList.Add(u.unlockName);
+                    if (u.IsMultiUnlock)
+                    {
+                        unlockList.Add($"{u.unlockName}_{u.maxUnlockLevel}");
+                    }
+                }
+                Plugin.Log.LogInfo($"No unlocks specified, defaulting to all ({unlockList.Count} entries)");
+                return unlockList;
+            }
+
+            idx = json.IndexOf('{', idx + 9);
+            if (idx < 0) return unlockList;
+
+            int depth = 1;
+            int start = idx + 1;
+            int end = start;
+            while (end < json.Length && depth > 0)
+            {
+                if (json[end] == '{') depth++;
+                else if (json[end] == '}') depth--;
+                if (depth > 0) end++;
+            }
+
+            string unlocksStr = json.Substring(start, end - start);
+
+            // Build a lookup of all game unlocks by name
+            var allUnlocks = new Dictionary<string, UnlockSO>(StringComparer.OrdinalIgnoreCase);
+            foreach (var u in ResourceManager.GetAllUnlocks())
+            {
+                allUnlocks[u.unlockName] = u;
+            }
+
+            // Parse key-value pairs
+            foreach (var pair in unlocksStr.Split(','))
+            {
+                var parts = pair.Split(':');
+                if (parts.Length != 2) continue;
+
+                string key = parts[0].Trim().Trim('"');
+                string valStr = parts[1].Trim().Trim('"');
+
+                if (!int.TryParse(valStr, out int level) || level < 1) continue;
+
+                if (allUnlocks.TryGetValue(key, out var unlock))
+                {
+                    unlockList.Add(unlock.unlockName);
+                    if (unlock.IsMultiUnlock)
+                    {
+                        int clampedLevel = Math.Min(level, unlock.maxUnlockLevel);
+                        unlockList.Add($"{unlock.unlockName}_{clampedLevel}");
+                    }
+                    Plugin.Log.LogInfo($"Unlock '{unlock.unlockName}' level={level}");
+                }
+                else
+                {
+                    Plugin.Log.LogWarning($"Unknown unlock '{key}'. Known: {string.Join(", ", allUnlocks.Keys)}");
+                }
+            }
+
+            Plugin.Log.LogInfo($"Parsed {unlockList.Count} unlock entries from request");
+            return unlockList;
+        }
+
+        /// <summary>
         /// Parse items from JSON body into an ItemBlock.
         /// Expects an "items" key with sub-object like {"cactus": 1000000000, "power": 1000000000}
         /// </summary>

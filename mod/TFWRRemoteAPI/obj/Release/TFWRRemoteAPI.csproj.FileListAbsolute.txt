@@ -1,0 +1,9 @@
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.csproj.AssemblyReference.cache
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.GeneratedMSBuildEditorConfig.editorconfig
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.AssemblyInfoInputs.cache
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.AssemblyInfo.cs
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.csproj.CoreCompileInputs.cache
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/bin/Release/TFWRRemoteAPI.dll
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/bin/Release/TFWRRemoteAPI.pdb
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.dll
+/home/msmith/myprojects/claudedino/mod/TFWRRemoteAPI/obj/Release/TFWRRemoteAPI.pdb

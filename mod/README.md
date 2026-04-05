@@ -154,7 +154,22 @@ sleep 1
 curl http://localhost:8787/poll
 ```
 
-### Run a leaderboard simulation
+### Run a simulation script in the game
+
+```bash
+curl -X POST http://localhost:8787/run-script -d '{
+  "code": "simulate(\"dino_test\", Unlocks, {Items.Carrot : 10000, Items.Hay : 50}, {\"a\" : 13}, 0, 1)",
+  "mode": "execute" 
+}'
+```
+
+This will run a `simulate` script in the game. This will allow testing of many different scenarios.
+For example, you can set up a for loop that tests a script with various different water thresholds
+(set with the globals that are injected into the simulation). 
+
+### Run a simulation directly
+Normally executing a simulation directly is sufficient for troubleshooting. However, if there is a
+need to run the `simulate` functionality directly, that is also supported:
 
 ```bash
 curl -X POST http://localhost:8787/run-script -d '{
@@ -174,14 +189,14 @@ while true; do
 done
 ```
 
-### Run a simulation with specific unlocks
+#### Run a simulation with specific unlocks
 
 ```bash
 curl -X POST http://localhost:8787/run-script -d '{
   "code": "quick_print(\"speed test\")",
   "mode": "simulate",
   "seed": 1,
-  "unlocks": {"speed": 3, "plant": 1},
+  "unlocks": {"debug": 1, "speed": 3, "plant": 1},
   "items": {"cactus": 1000000000, "power": 1000000000}
 }'
 ```

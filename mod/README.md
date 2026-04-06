@@ -158,18 +158,19 @@ curl http://localhost:8787/poll
 
 ```bash
 curl -X POST http://localhost:8787/run-script -d '{
-  "code": "simulate(\"dino_test\", Unlocks, {Items.Carrot : 10000, Items.Hay : 50}, {\"a\" : 13}, 0, 1)",
+  "code": "simulate(\"dino_test\", Unlocks, {Items.Carrot : 10000, Items.Hay : 50}, {\"water_threshold\" : 0.5}, 0, 1000)",
   "mode": "execute" 
 }'
 ```
 
-This will run a `simulate` script in the game. This will allow testing of many different scenarios.
+This will run a `simulate` script in the game on a previously created "dino_test" script. 
+This will allow testing of many different scenarios of a previously executed filename. 
 For example, you can set up a for loop that tests a script with various different water thresholds
 (set with the globals that are injected into the simulation). 
 
 ### Run a simulation directly
-Normally executing a simulation directly is sufficient for troubleshooting. However, if there is a
-need to run the `simulate` functionality directly, that is also supported:
+Normally, executing `simulate` directly is sufficient for troubleshooting. However, if there is a
+need to run the simulation functionality directly, that is also supported:
 
 ```bash
 curl -X POST http://localhost:8787/run-script -d '{

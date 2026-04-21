@@ -6,9 +6,9 @@ harvest_counter = HARVEST_DEFAULT
 count = 0
 
 # Comment these out for simulation runs
-petal_min = 12
-water_threshold = 0.535
-initial_wait = 3
+petal_min = 10
+water_threshold = 0.4
+initial_wait = 2
 
 def plant_and_use_water():
 	global first_pass
@@ -114,7 +114,7 @@ def run_sunflower():
 			harvest() # sometimes we harvest a sunflower that is not yet fully grown. TODO track these cases?
 			harvest_counter -= 1
 			
-		if num_items(Items.Power) >= 100000:
+		if num_items(Items.Power) >= 10000:
 			return True
 	
 	return False

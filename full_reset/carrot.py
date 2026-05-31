@@ -35,26 +35,17 @@ def drone_action():
 		
 		move(North)
 
-def harvest_carrot(num_carrot):
+def harvest_carrot(target_carrot):
 	global world_size
 
 	world_size = get_world_size()
-	curr_wood = num_items(Items.Wood)
-	cost_carrot = 1
-	needed_wood = cost_carrot * num_carrot + get_cost(Entities.Carrot)[Items.Wood]
-	if curr_wood < needed_wood:
-		harvest_wood(needed_wood - curr_wood)
-	
-	curr_hay = num_items(Items.Hay)
-	cost_hay = 1
-	needed_hay = cost_hay * num_carrot + get_cost(Entities.Carrot)[Items.Hay]
-	if curr_hay < needed_hay:
-		harvest_hay(needed_hay - curr_hay)
 
-	ending_carrot = num_items(Items.Carrot) + num_carrot
-	
+	cost = get_cost(Entities.Carrot)
+	harvest_wood(target_carrot * cost[Items.Wood] + cost[Items.Wood])
+	harvest_hay(target_carrot * cost[Items.Hay] + cost[Items.Hay])
+
 	if num_unlocked(Unlocks.Megafarm):
-		while num_items(Items.Carrot) < ending_carrot:
+		while num_items(Items.Carrot) < target_carrot:
 			for i in range(world_size):
 				
 				spawn_drone(drone_action)
@@ -63,7 +54,7 @@ def harvest_carrot(num_carrot):
 			
 				move(East)
 	else:
-		while num_items(Items.Carrot) < ending_carrot:
+		while num_items(Items.Carrot) < target_carrot:
 			plant_stuff()
 			
 			if get_pos_y() == 0 and num_unlocked(Unlocks.Expand) > 1:

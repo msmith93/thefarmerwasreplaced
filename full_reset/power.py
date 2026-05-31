@@ -190,16 +190,11 @@ def run_sunflower_multi():
 		move(East)
 		wait_for_drones(drones)
 
-def harvest_power(num_power):
+def harvest_power(target_power):
 	global world_size
 	clear()
 
-	curr_carrots = num_items(Items.Carrot)
-	needed_carrots = get_cost(Entities.Sunflower)[Items.Carrot] * num_power
-	if curr_carrots < needed_carrots:
-		harvest_carrot(needed_carrots - curr_carrots)
-
-	ending_power = num_items(Items.Power) + num_power
+	harvest_carrot(get_cost(Entities.Sunflower)[Items.Carrot] * target_power)
 
 	if num_unlocked(Unlocks.Megafarm) < 2:
 		world_size = get_world_size()
@@ -208,14 +203,14 @@ def harvest_power(num_power):
 		watering = num_unlocked(Unlocks.Watering) > 0
 		fert_unlocked = num_unlocked(Unlocks.Fertilizer) > 0
 
-		while num_items(Items.Power) < ending_power:
+		while num_items(Items.Power) < target_power:
 			run_sunflower(harvest_default, watering, fert_unlocked)
 	else:
 		orig_world_size = get_world_size()
 		set_world_size(max_drones())
 		world_size = get_world_size()
 
-		while num_items(Items.Power) < ending_power:
+		while num_items(Items.Power) < target_power:
 			run_sunflower_multi()
 		
 		set_world_size(orig_world_size)

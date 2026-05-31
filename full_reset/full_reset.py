@@ -1,84 +1,69 @@
-from wood import harvest_wood
-from hay import harvest_hay
-from carrot import harvest_carrot
-from power import harvest_power
-from pumpkin import harvest_pumpkin
-from gold import harvest_gold
-from weird_substance import harvest_weird_substance
-from cacti import harvest_cacti
-from bone import harvest_bone
+# =============================================================================
+# full_reset — pluggable starting point
+# =============================================================================
+# A generic driver that buys a sequence of Unlocks, harvesting whatever each one
+# costs along the way. To make it your own, fill in the three CONFIG sections
+# below and (optionally) the pre_harvest hook, then run this file in-game.
+#
+#   - crop_template.py    : a stub for writing one crop's harvest_<crop>(num)
+#   - full_reset_solution.py : a complete worked example of everything below
+#   - README.md           : the full guide
+# =============================================================================
 
-POWER_THRESHOLD = 250
+# ---- IMPORT your crop harvest functions -------------------------------------
+# Each must satisfy the harvest_<crop>(target) contract (see crop_template.py):
+# on return, num_items(Items.<Crop>) is at least target (a total, not a delta).
+# from wood import harvest_wood
+# from carrot import harvest_carrot
 
 
-unlock_order = [Unlocks.Speed, Unlocks.Expand, 
-	Unlocks.Plant, Unlocks.Expand, Unlocks.Speed,
-	Unlocks.Carrots, Unlocks.Expand, Unlocks.Speed,
-	Unlocks.Watering, Unlocks.Trees, Unlocks.Grass,
-	Unlocks.Trees, Unlocks.Carrots, Unlocks.Sunflowers,
-	Unlocks.Expand, Unlocks.Grass,
-	Unlocks.Speed, Unlocks.Fertilizer, Unlocks.Watering,
-	Unlocks.Pumpkins, Unlocks.Polyculture, Unlocks.Speed,
-	Unlocks.Carrots, Unlocks.Watering, Unlocks.Fertilizer,
-	Unlocks.Trees, Unlocks.Pumpkins, Unlocks.Fertilizer, 
-	Unlocks.Grass, Unlocks.Trees, Unlocks.Watering, 
-	Unlocks.Carrots, Unlocks.Pumpkins, Unlocks.Expand,
-	Unlocks.Cactus, Unlocks.Fertilizer, Unlocks.Expand,
-	Unlocks.Carrots, Unlocks.Pumpkins, Unlocks.Expand,
-	Unlocks.Mazes, Unlocks.Megafarm, Unlocks.Megafarm,
-	Unlocks.Cactus, Unlocks.Mazes, Unlocks.Megafarm,
-	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Cactus,
-	Unlocks.Mazes, Unlocks.Dinosaurs, Unlocks.Hats,
-	Unlocks.Polyculture, Unlocks.Polyculture, Unlocks.Grass,
-	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, 
-	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, 
-	Unlocks.Trees, Unlocks.Carrots, Unlocks.Grass, Unlocks.Grass,
-	Unlocks.Megafarm, Unlocks.Megafarm,
-	Unlocks.Trees, Unlocks.Carrots, Unlocks.Pumpkins,
-	Unlocks.Dinosaurs, Unlocks.Dinosaurs,
-	Unlocks.Cactus, Unlocks.Mazes, Unlocks.Mazes,
-	Unlocks.Leaderboard
-	]
+# ---- CONFIG 1: the unlock strategy ------------------------------------------
+# The ordered list of Unlocks to buy. The driver buys each in turn, harvesting
+# whatever it costs first.
+unlock_order = [
+	# Unlocks.Speed, Unlocks.Expand, Unlocks.Plant, ...
+]
 
+
+# ---- CONFIG 2: map each Item to the function that harvests it ----------------
 harvest_funcs = {
-#   Item type       :   harvest func,
-	Items.Wood      :   harvest_wood,
-	Items.Hay       :   harvest_hay,
-	Items.Carrot    :   harvest_carrot,
-	Items.Pumpkin	:   harvest_pumpkin,
-	Items.Power		: 	harvest_power,
-	Items.Gold		:   harvest_gold,
-	Items.Weird_Substance : harvest_weird_substance,
-	Items.Cactus    :   harvest_cacti,
-	Items.Bone		:	harvest_bone,
+	# Items.Wood:   harvest_wood,
+	# Items.Carrot: harvest_carrot,
 }
-harvesting_order = [Items.Bone, Items.Gold, Items.Weird_Substance, Items.Cactus, Items.Pumpkin, Items.Carrot, Items.Wood, Items.Hay]
 
+
+# ---- CONFIG 3: order to gather items within a single unlock step ------------
+# Only items present in a given unlock's cost are harvested. List raw inputs
+# LAST: a crop tops up and then consumes its inputs while farming, so anything
+# also owed directly to the unlock (e.g. Wood, Hay) must be re-gathered after.
+harvesting_order = [
+	# Items.Carrot, Items.Wood, Items.Hay, ...
+]
+
+
+# ---- OPTIONAL: pre-harvest hook ---------------------------------------------
+# Runs once per unlock step BEFORE the per-item harvesting loop. Use it to
+# stockpile something proactively (full_reset_solution.py uses it to batch
+# sunflower/power). Leave it as a no-op if you don't need it.
+def pre_harvest(items_needed, unlock_num):
+	pass
+
+
+# =============================================================================
+# Framework (you usually don't need to edit below here)
+# =============================================================================
 def harvest_all(items_needed, unlock_num):
-	if num_unlocked(Unlocks.Sunflowers) and num_items(Items.Power) < POWER_THRESHOLD:
-		desired_sunflowers = POWER_THRESHOLD * 2 + (unlock_num * 30)
+	pre_harvest(items_needed, unlock_num)
 
-		curr_carrots = num_items(Items.Carrot)
-		needed_carrots = desired_sunflowers // 3
-		if curr_carrots < needed_carrots:
-			harvest_carrot(needed_carrots - curr_carrots)
-		harvest_power(desired_sunflowers)
-
+	# Pass the cost as a target: ensure each costed item reaches that amount.
 	for item in harvesting_order:
 		if item in items_needed:
 			harvest_funcs[item](items_needed[item])
 
 def unlock_wrapper(unlock_item, unlock_num):
-	if unlock_item == Unlocks.Megafarm:
-		pass
 	unlock_cost = get_cost(unlock_item)
 	harvest_all(unlock_cost, unlock_num)
 	unlock(unlock_item)
 
 for i in range(len(unlock_order)):
-	unlck = unlock_order[i]
-	unlock_wrapper(unlck, i)
-
-do_a_flip()
-#while True:
-#	do_a_flip()
+	unlock_wrapper(unlock_order[i], i)

@@ -25,13 +25,10 @@ def drone_action():
 		
 		move(North)
 
-def harvest_hay(num_hay):
+def harvest_hay(target_hay):
 	global world_size
 	global plant_trees
 	global watering
-
-	starting_hay = num_items(Items.Hay)
-	ending_hay = starting_hay + num_hay
 
 	world_size = get_world_size()
 
@@ -41,7 +38,7 @@ def harvest_hay(num_hay):
 	watering = num_unlocked(Unlocks.Watering) > 0
 
 	if num_unlocked(Unlocks.Megafarm):
-		while num_items(Items.Hay) < ending_hay:
+		while num_items(Items.Hay) < target_hay:
 			for i in range(world_size):
 				
 				spawn_drone(drone_action)
@@ -51,7 +48,7 @@ def harvest_hay(num_hay):
 				move(East)
 	else:
 
-		while num_items(Items.Hay) < ending_hay:
+		while num_items(Items.Hay) < target_hay:
 			plant_stuff()
 
 			if get_pos_y() == 0 and num_unlocked(Unlocks.Expand) > 1:

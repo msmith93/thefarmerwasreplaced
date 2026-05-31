@@ -104,20 +104,17 @@ def search():
 		if num_items(Items.Gold) >= global_num_gold:
 			break
 
-def harvest_gold(num_gold):
+def harvest_gold(target_gold):
 	global drone_id
 	global global_num_gold
 
-	ending_gold = num_items(Items.Gold) + num_gold
-	global_num_gold = ending_gold
-	
-	curr_ws = num_items(Items.Weird_Substance)
+	global_num_gold = target_gold
+
 	cost_ws = 1
-	needed_ws = cost_ws * (num_gold // get_world_size()) + (get_world_size() * (2 ** (num_unlocked(Unlocks.Mazes) - 1)))
-	if curr_ws < needed_ws:
-		harvest_weird_substance(needed_ws - curr_ws)
-	
-	while num_items(Items.Gold) < ending_gold:
+	needed_ws = cost_ws * (target_gold // get_world_size()) + (get_world_size() * (2 ** (num_unlocked(Unlocks.Mazes) - 1)))
+	harvest_weird_substance(needed_ws)
+
+	while num_items(Items.Gold) < target_gold:
 		clear()
 		plant(Entities.Bush)
 		n_substance = get_world_size() * 2 ** (num_unlocked(Unlocks.Mazes) - 1)

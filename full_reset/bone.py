@@ -232,7 +232,7 @@ def harvest_one_tail():
 			
 	change_hat(Hats.Straw_Hat)
 
-def harvest_bone(num_bones):
+def harvest_bone(target_bones):
 	global world_size
 	global world_size_minus_one
 	global edge_positions
@@ -243,14 +243,14 @@ def harvest_bone(num_bones):
 	global game_complete
 	global aggressive_stage
 
-	harvest_cacti(1) # need one loop of cactus to plant apples
+	harvest_cacti(1) # ensure at least one cactus on hand to plant apples
 
 	world_size = get_world_size()
 	world_size_minus_one = get_world_size() - 1
 
 	edge_positions = [0, world_size_minus_one]
 
-	while num_items(Items.Bone) < num_bones:
+	while num_items(Items.Bone) < target_bones:
 		offlimit_columns_stage1 = {
 		}
 		offlimit_columns_stage2 = {

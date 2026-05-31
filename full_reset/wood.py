@@ -23,19 +23,18 @@ def drone_action():
 		
 		move(North)
 
-def harvest_wood(num_wood):
+def harvest_wood(target_wood):
 	global world_size
 	global plant_trees
 	global watering
 
 	world_size = get_world_size()
-	ending_wood = num_items(Items.Wood) + num_wood
 
 	plant_trees = num_unlocked(Unlocks.Trees) > 0
 	watering = num_unlocked(Unlocks.Watering) > 0
 
 	if num_unlocked(Unlocks.Megafarm):
-		while num_items(Items.Wood) < ending_wood:
+		while num_items(Items.Wood) < target_wood:
 			for i in range(world_size):
 				
 				spawn_drone(drone_action)
@@ -44,7 +43,7 @@ def harvest_wood(num_wood):
 			
 				move(East)
 	else:
-		while num_items(Items.Wood) < ending_wood:
+		while num_items(Items.Wood) < target_wood:
 			plant_stuff()
 			
 			if get_pos_y() == 0 and num_unlocked(Unlocks.Expand) > 1:

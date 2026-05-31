@@ -1,10 +1,7 @@
-def harvest_weird_substance(num_weird_substance):
-	starting_weird_substance = num_items(Items.Weird_Substance)
-	ending_weird_substance = starting_weird_substance + num_weird_substance
-	
+def harvest_weird_substance(target_weird_substance):
 	clear()
 
-	while num_items(Items.Weird_Substance) < ending_weird_substance:
+	while num_items(Items.Weird_Substance) < target_weird_substance:
 		while get_water() < 0.75:
 			use_item(Items.Water)
 		

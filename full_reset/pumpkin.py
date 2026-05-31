@@ -190,18 +190,11 @@ def plant_pumpkins():
 	move(East)
 	wait_for_drones(drones)
 
-def harvest_pumpkin(num_pumpkins):
+def harvest_pumpkin(target_pumpkins):
 	global world_size
 	global first_pass
 
-	starting_pumpkins = num_items(Items.Pumpkin)
-	ending_pumpkins = starting_pumpkins + num_pumpkins
-
-	curr_carrots = num_items(Items.Carrot)
-	needed_carrots = calculate_pumpkins_planted(num_pumpkins)
-	if curr_carrots < needed_carrots:
-		harvest_carrot(needed_carrots - curr_carrots)
-
+	harvest_carrot(calculate_pumpkins_planted(target_pumpkins))
 
 	if num_unlocked(Unlocks.Megafarm) < 3:
 		world_size = get_world_size()
@@ -209,7 +202,7 @@ def harvest_pumpkin(num_pumpkins):
 		till_soil(world_size)
 		harvest_full_pumpkin(world_size)
 
-		while num_items(Items.Pumpkin) < ending_pumpkins:
+		while num_items(Items.Pumpkin) < target_pumpkins:
 			plant_first_pass(world_size)
 			harvest_full_pumpkin(world_size)
 	else:
@@ -218,7 +211,7 @@ def harvest_pumpkin(num_pumpkins):
 		set_world_size(max_drones())
 		world_size = get_world_size()
 
-		while num_items(Items.Pumpkin) < ending_pumpkins:
+		while num_items(Items.Pumpkin) < target_pumpkins:
 			plant_pumpkins()
 			first_pass = False
 			if check_pumpkin():

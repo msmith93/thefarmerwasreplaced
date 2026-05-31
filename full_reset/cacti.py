@@ -106,7 +106,7 @@ def sort_rows():
 	move(North) 
 	wait_for_drones(drones)
 
-def harvest_cacti(num_cacti):
+def harvest_cacti(target_cacti):
 	global world_size
 	clear()
 	original_world_size = get_world_size()
@@ -114,24 +114,16 @@ def harvest_cacti(num_cacti):
 
 	world_size = get_world_size()
 
-	curr_pumpkin = num_items(Items.Pumpkin)
 	cacti_harvested_each_loop = (world_size * world_size) ** 2 * (2 ** (num_unlocked(Unlocks.Cactus) - 1))
 
-	needed_loops = (num_cacti + cacti_harvested_each_loop - 1) // cacti_harvested_each_loop
+	needed_loops = (target_cacti + cacti_harvested_each_loop - 1) // cacti_harvested_each_loop
 	# needed loops: number of loops
 	cactus_planted_per_loop = world_size * world_size # cactus / loop
 	needed_cactus_planted = cactus_planted_per_loop * needed_loops # cactus planted total
 	needed_pumpkin = needed_cactus_planted * get_cost(Entities.Cactus)[Items.Pumpkin]
-	if curr_pumpkin < needed_pumpkin:
-		harvest_pumpkin(needed_pumpkin - curr_pumpkin)
-	
-	# needed_power = needed_loops * world_size ** 2
-	# if num_items(Items.Power) < needed_power:
-	# 	harvest_power(needed_power)
+	harvest_pumpkin(needed_pumpkin)
 
-	ending_cacti = num_items(Items.Cactus) + num_cacti
-	
-	while num_items(Items.Cactus) < ending_cacti:
+	while num_items(Items.Cactus) < target_cacti:
 		plant_cacti()
 		sort_columns()
 		sort_rows()

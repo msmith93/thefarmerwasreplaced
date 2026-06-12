@@ -1,0 +1,44 @@
+{
+  "leaderboard": "Pumpkins_Single",
+  "baseline": {
+    "name": "open_47_pumpkins",
+    "script": "iterations/open_47_pumpkins.py",
+    "mean_time_seconds": 436.3,
+    "n_runs": 17,
+    "note": "Opus 4.7 baseline, benchmarked 2026-06-11 with FINAL_TIME appended (open_47_pumpkins_timed.py)"
+  },
+  "best_iteration": 3,
+  "best_mean_time": 404.324,
+  "iterations": [
+    {
+      "id": 1,
+      "name": "saturate_scan",
+      "script": "iterations/iteration_1_saturate_scan.py",
+      "results": "iterations/iteration_1_results.json",
+      "notes": "iterations/iteration_1_notes.md",
+      "mean_time_seconds": 417.473,
+      "win_rate": 1.0,
+      "timestamp": "2026-06-11T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "early_peek",
+      "script": "iterations/iteration_2_early_peek.py",
+      "results": "iterations/iteration_2_results.json",
+      "notes": "iterations/iteration_2_notes.md",
+      "mean_time_seconds": 405.894,
+      "win_rate": 1.0,
+      "timestamp": "2026-06-11T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "name": "seam_polish",
+      "script": "iterations/iteration_3_seam_polish.py",
+      "results": "iterations/iteration_3_results.json",
+      "notes": "iterations/iteration_3_notes.md",
+      "mean_time_seconds": 404.324,
+      "win_rate": 1.0,
+      "timestamp": "2026-06-11T00:00:00Z"
+    }
+  ]
+}

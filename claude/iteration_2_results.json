@@ -1,0 +1,91 @@
+{
+  "iteration": 2,
+  "name": "early_peek",
+  "leaderboard": "Pumpkins_Single",
+  "timestamp": "2026-06-11T00:00:00Z",
+  "strategy_summary": "Iteration 1 design plus: during the plant pass, a 1-tick measure(West) peek at the previous column fixes already-resolved deaths one pipeline stage early; till only on cycle 1; water before plant; lean inner loop.",
+  "method": "leaderboard_run",
+  "n_runs": 18,
+  "win_rate": 1.0,
+  "mean_time_seconds": 405.894,
+  "std_time_seconds": 5.245,
+  "best_time_seconds": 396.23,
+  "worst_time_seconds": 415.28,
+  "previous_best_mean_seconds": 417.473,
+  "improvement_vs_previous_pct": 2.77,
+  "improvement_vs_baseline_pct": 6.97,
+  "runs": [
+    {
+      "run": 0,
+      "time_seconds": 402.09
+    },
+    {
+      "run": 1,
+      "time_seconds": 415.28
+    },
+    {
+      "run": 2,
+      "time_seconds": 406.29
+    },
+    {
+      "run": 3,
+      "time_seconds": 401.29
+    },
+    {
+      "run": 4,
+      "time_seconds": 410.11
+    },
+    {
+      "run": 5,
+      "time_seconds": 413.45
+    },
+    {
+      "run": 6,
+      "time_seconds": 403.27
+    },
+    {
+      "run": 7,
+      "time_seconds": 410.94
+    },
+    {
+      "run": 8,
+      "time_seconds": 403
+    },
+    {
+      "run": 9,
+      "time_seconds": 401.95
+    },
+    {
+      "run": 10,
+      "time_seconds": 400.43
+    },
+    {
+      "run": 11,
+      "time_seconds": 410.75
+    },
+    {
+      "run": 12,
+      "time_seconds": 402.16
+    },
+    {
+      "run": 13,
+      "time_seconds": 400.32
+    },
+    {
+      "run": 14,
+      "time_seconds": 411.97
+    },
+    {
+      "run": 15,
+      "time_seconds": 408.19
+    },
+    {
+      "run": 16,
+      "time_seconds": 396.23
+    },
+    {
+      "run": 17,
+      "time_seconds": 408.37
+    }
+  ]
+}

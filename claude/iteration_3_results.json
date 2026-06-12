@@ -1,0 +1,91 @@
+{
+  "iteration": 3,
+  "name": "seam_polish",
+  "leaderboard": "Pumpkins_Single",
+  "timestamp": "2026-06-11T00:00:00Z",
+  "strategy_summary": "Iteration 2 plus seam-East peek while planting the last column (wraparound catches the first column's deaths early) and merge polling at the nearest field edge instead of always the top row.",
+  "method": "leaderboard_run",
+  "n_runs": 18,
+  "win_rate": 1.0,
+  "mean_time_seconds": 404.324,
+  "std_time_seconds": 4.928,
+  "best_time_seconds": 393.76,
+  "worst_time_seconds": 412.41,
+  "previous_best_mean_seconds": 405.894,
+  "improvement_vs_previous_pct": 0.39,
+  "improvement_vs_baseline_pct": 7.33,
+  "runs": [
+    {
+      "run": 0,
+      "time_seconds": 403.24
+    },
+    {
+      "run": 1,
+      "time_seconds": 398.27
+    },
+    {
+      "run": 2,
+      "time_seconds": 406.94
+    },
+    {
+      "run": 3,
+      "time_seconds": 405.01
+    },
+    {
+      "run": 4,
+      "time_seconds": 393.76
+    },
+    {
+      "run": 5,
+      "time_seconds": 404.88
+    },
+    {
+      "run": 6,
+      "time_seconds": 406.2
+    },
+    {
+      "run": 7,
+      "time_seconds": 400.63
+    },
+    {
+      "run": 8,
+      "time_seconds": 406.93
+    },
+    {
+      "run": 9,
+      "time_seconds": 409.72
+    },
+    {
+      "run": 10,
+      "time_seconds": 400.44
+    },
+    {
+      "run": 11,
+      "time_seconds": 409.41
+    },
+    {
+      "run": 12,
+      "time_seconds": 412.41
+    },
+    {
+      "run": 13,
+      "time_seconds": 401.86
+    },
+    {
+      "run": 14,
+      "time_seconds": 403.67
+    },
+    {
+      "run": 15,
+      "time_seconds": 396.56
+    },
+    {
+      "run": 16,
+      "time_seconds": 411.31
+    },
+    {
+      "run": 17,
+      "time_seconds": 406.59
+    }
+  ]
+}

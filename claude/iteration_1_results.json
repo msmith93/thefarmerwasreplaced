@@ -1,0 +1,90 @@
+{
+  "iteration": 1,
+  "name": "saturate_scan",
+  "leaderboard": "Pumpkins_Single",
+  "timestamp": "2026-06-11T00:00:00Z",
+  "strategy_summary": "Deep-but-rare watering (4 tanks when <0.4), 3-column measure()-based death scan with inline replants, targeted watched-list second pass with fertilizer camping, seam entity-ID poll for mega completion.",
+  "method": "leaderboard_run",
+  "n_runs": 18,
+  "win_rate": 1.0,
+  "mean_time_seconds": 417.473,
+  "std_time_seconds": 5.685,
+  "best_time_seconds": 408.86,
+  "worst_time_seconds": 433.77,
+  "baseline_open_47_mean_seconds": 436.3,
+  "improvement_vs_baseline_pct": 4.32,
+  "runs": [
+    {
+      "run": 0,
+      "time_seconds": 420.22
+    },
+    {
+      "run": 1,
+      "time_seconds": 421.94
+    },
+    {
+      "run": 2,
+      "time_seconds": 413.64
+    },
+    {
+      "run": 3,
+      "time_seconds": 413.3
+    },
+    {
+      "run": 4,
+      "time_seconds": 433.77
+    },
+    {
+      "run": 5,
+      "time_seconds": 419.04
+    },
+    {
+      "run": 6,
+      "time_seconds": 414.98
+    },
+    {
+      "run": 7,
+      "time_seconds": 411.86
+    },
+    {
+      "run": 8,
+      "time_seconds": 418.31
+    },
+    {
+      "run": 9,
+      "time_seconds": 416.34
+    },
+    {
+      "run": 10,
+      "time_seconds": 420.54
+    },
+    {
+      "run": 11,
+      "time_seconds": 412.76
+    },
+    {
+      "run": 12,
+      "time_seconds": 416.55
+    },
+    {
+      "run": 13,
+      "time_seconds": 423.41
+    },
+    {
+      "run": 14,
+      "time_seconds": 421.03
+    },
+    {
+      "run": 15,
+      "time_seconds": 408.86
+    },
+    {
+      "run": 16,
+      "time_seconds": 409.77
+    },
+    {
+      "run": 17,
+      "time_seconds": 418.19
+    }
+  ]
+}

@@ -12,41 +12,47 @@ def plant_column():
 		plant(Entities.Bamboo)
 		
 		move(North)
+
+def harvest_west():
+	move(West)
+	harvest()
+	move(East)
+
+def harvest_east():
+	move(East)
+	harvest()
+	move(West)
 		
 def harvest_bamboo():
 	for j in range(world_size):
-		west_bamboo_height = measure(West)
-		east_bamboo_height = measure(East)
+		west_bamboo_height = measure(West) + 1
+		east_bamboo_height = measure(East) + 1
 		
-		if west_bamboo_height < east_bamboo_height:
-			climb_to_z(west_bamboo_height)
-			move(West)
-			harvest()
-			move(East)
-			climb_to_z(east_bamboo_height)
-			move(East)
-			harvest()
-			move(West)
+		west_taller = False
+		if west_bamboo_height > east_bamboo_height:
+			west_taller = True
+		
+		if west_taller:
+			hover(west_bamboo_height)
+			harvest_west()
+			hover(east_bamboo_height)
+			harvest_east()
 		else:
-			climb_to_z(east_bamboo_height)
-			move(East)
-			harvest()
-			move(West)
-			climb_to_z(west_bamboo_height)
-			move(West)
-			harvest()
-			move(East)
-		
+			hover(east_bamboo_height)
+			harvest_east()
+			hover(west_bamboo_height)
+			harvest_west()
 		move(North)
 
 while True:
 	for i in range(world_size):
-		if i % 3 > 0:
+		if i % 3 != 1:
 			plant_column()
 		move(East)
 	
 	
-	for i in range(world_size):
-		if i % 3 == 0:
+	for i in range((world_size // 3) * 3):
+		if i % 3 == 1:
 			harvest_bamboo()
 		move(East)
+	clear()

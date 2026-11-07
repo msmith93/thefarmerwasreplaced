@@ -8,9 +8,13 @@ while True:
 			plant(Entities.Carrot)
 		
 		if can_harvest():
-		
 			harvest()
-			plant(Entities.Carrot)
+			if (get_pos_x() + get_pos_y()) % 2:
+				plant(Entities.Carrot)
+			elif get_pos_x() % 2:
+				plant(Entities.Grass)
+			else:
+				plant(Entities.Tree)
 		move(North)
 	move(East)
 	

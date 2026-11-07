@@ -13,4 +13,4 @@ while True:
 	
 	dig_to_ground_type(Grounds.Iron)
 	dig() # get the iron the drone is above
-
+	
